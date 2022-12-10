@@ -5,7 +5,7 @@ use std::marker::PhantomData;
 
 use cosmwasm_std::{Addr, BlockInfo, CustomMsg, StdResult, Storage};
 
-use cw721::{ContractInfoResponse, Cw721, Expiration};
+use crate::spec::{ContractInfoResponse, Cw721, Expiration};
 use cw_storage_plus::{Index, IndexList, IndexedMap, Item, Map, MultiIndex};
 
 pub struct Cw721Contract<'a, T, C, E, Q>

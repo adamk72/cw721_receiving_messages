@@ -1,12 +1,12 @@
 use std::marker::PhantomData;
 
+use crate::spec::{
+    AllNftInfoResponse, Approval, ApprovalResponse, ApprovalsResponse, ContractInfoResponse,
+    NftInfoResponse, NumTokensResponse, OperatorsResponse, OwnerOfResponse, TokensResponse,
+};
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{
     to_binary, Addr, CosmosMsg, CustomMsg, QuerierWrapper, StdResult, WasmMsg, WasmQuery,
-};
-use cw721::{
-    AllNftInfoResponse, Approval, ApprovalResponse, ApprovalsResponse, ContractInfoResponse,
-    NftInfoResponse, NumTokensResponse, OperatorsResponse, OwnerOfResponse, TokensResponse,
 };
 use serde::de::DeserializeOwned;
 use serde::Serialize;
