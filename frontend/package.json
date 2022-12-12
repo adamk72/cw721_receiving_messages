@@ -11,5 +11,9 @@
   "devDependencies": {
     "typescript": "^4.9.3",
     "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.29.5",
+    "@cosmjs/stargate": "^0.29.5"
   }
 }
