@@ -1,25 +1,23 @@
-import type { Component } from 'solid-js';
+import { Component, createSignal, onMount } from 'solid-js';
 
 import logo from './logo.svg';
 import styles from './App.module.css';
 
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { MalagaInfo } from "../MalagaInfo"
+
 const App: Component = () => {
+  onMount(async () => {
+    const client = await CosmWasmClient.connect(MalagaInfo.rpc)
+    setContract(await client.getContracts(3216))
+  })
+  const [contractId, setContract] = createSignal();
+
   return (
     <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={logo} class={styles.logo} alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Solid
-        </a>
-      </header>
+      <main>
+        <pre>Contract: {contractId() as string || "awaiting..."}</pre>
+      </main>
     </div>
   );
 };
