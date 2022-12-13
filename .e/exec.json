@@ -1,0 +1,99 @@
+{
+  "initBob": {
+    "name": "Bob-1-NFT",
+    "symbol": "BOB",
+    "minter": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0"
+  },
+  "initAlice": {
+    "name": "Alice-1-NFT",
+    "symbol": "ALICE",
+    "minter": "wasm1z655rx0jlt5ujlgul2m8ufdj50jdjqlrydpumf"
+  },
+  "mint": {
+    "mint": {
+      "token_id": "dakkadakka",
+      "owner": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0",
+      "token_uri": "https://picsum.photos/200/300"
+    }
+  },
+  "mint2": {
+    "mint": {
+      "token_id": "dakkadakka2",
+      "owner": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0",
+      "token_uri": "https://picsum.photos/300/200"
+    }
+  },
+  "mint3": {
+    "mint": {
+      "token_id": "dakkadakka3",
+      "owner": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0",
+      "token_uri": "https://picsum.photos/300/200"
+    }
+  },
+  "mintBob": {
+    "mint": {
+      "token_id": "dakkadakkaBob",
+      "owner": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0",
+      "token_uri": "https://picsum.photos/300/200"
+    }
+  },
+  "mintWal": {
+    "mint": {
+      "token_id": "dakkadakkaWallet",
+      "owner": "wasm1pa7r7e9uhdqzuxjejryt0yyrn55a5u5z5qqfwm",
+      "token_uri": "https://picsum.photos/300/200"
+    }
+  },
+  "approve": {
+    "approve": {
+      "spender": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0",
+      "token_id": "dakkadakka"
+    }
+  },
+  "revoke": {
+    "revoke": {
+      "spender": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0",
+      "token_id": "dakkadakka"
+    }
+  },
+  "approveAll": {
+    "approve_all": {
+      "operator": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0"
+    }
+  },
+  "revokeAll": {
+    "revoke_all": {
+      "operator": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0"
+    }
+  },
+  "transferNft": {
+    "transfer_nft": {
+      "recipient": "wasm1z655rx0jlt5ujlgul2m8ufdj50jdjqlrydpumf",
+      "token_id": "dakkadakkaWallet"
+    }
+  },
+  "sendNft": {
+    "send_nft": {
+      "contract": "wasm16ndav9vfpejvq3u0xx657h264gt5rg56mmx4rz9s9tm0egxrhfyscems6q",
+      "token_id": "dakkadakkaBob",
+      "msg": "InlvdSBhcmUgbW92aW5nIG5vdyI=" 
+    }
+  },
+  "sendNftWalToAlice": {
+    "send_nft": {
+      "contract": "wasm16ndav9vfpejvq3u0xx657h264gt5rg56mmx4rz9s9tm0egxrhfyscems6q",
+      "token_id": "dakkadakkaWallet",
+      "msg": "InlvdSBhcmUgbW92aW5nIG5vdyI=" 
+    }
+  },
+  "burn": {
+    "burn": {
+      "token_id": "dakkadakka"
+    }
+  },
+  "extension": {
+    "extension": {
+      "msg": ""
+    }
+  }
+}

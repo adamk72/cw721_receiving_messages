@@ -1,0 +1,50 @@
+{
+  "minter": {
+    "minter": {}
+  },
+  "contractInfo": {
+    "contract_info": {}
+  },
+  "nftInfo": {
+    "nft_info": {
+      "token_id": "dakkadakka"
+    }
+  },
+  "ownerOf": {
+    "owner_of": {
+      "token_id": "dakkadakkaWallet"
+    }
+  },
+  "allNftInfo": {
+    "all_nft_info": {
+      "token_id": "dakkadakka2"
+    }
+  },
+  "allOperators": {
+    "all_operators": {
+      "owner": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0"
+    }
+  },
+  "numTokens": {
+    "num_tokens": {}
+  },
+  "tokens": {
+    "tokens": {
+      "owner": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0"
+    }
+  },
+  "allTokens": {
+    "all_tokens": {}
+  },
+  "approval": {
+    "approval": {
+      "token_id": "dakkadakkaBob",
+      "spender": "wasm1kmhmzgw7wvt9saaq8z2pk5aajxsznpz7c4l5m0"
+    }
+  },
+  "approvals": {
+    "approvals": {
+      "token_id": "dakkadakka"
+    }
+  }
+}
