@@ -49,6 +49,7 @@ where
     ) -> Result<Response<C>, ContractError> {
         match msg {
             ExecuteMsg::Mint(msg) => self.mint(deps, env, info, msg),
+            ExecuteMsg::ReceiveNft { msg } => self.receive_nft(deps, env, info, msg),
             ExecuteMsg::Approve {
                 spender,
                 token_id,
@@ -117,6 +118,27 @@ where
             .add_attribute("minter", info.sender)
             .add_attribute("owner", msg.owner)
             .add_attribute("token_id", msg.token_id))
+    }
+
+    fn receive_nft(
+        &self,
+        _deps: DepsMut,
+        _env: Env,
+        _info: MessageInfo,
+        msg: Cw721ReceiveMsg,
+    ) -> Result<Response<C>, ContractError> {
+        // Some details from: https://medium.com/obi-money/how-to-code-multi-contract-interactions-interwasm-dev-2-767ef1e24373
+        // verify_authorized_nft_contract(deps.storage, &info.sender)?;
+
+        // self._transfer_nft(deps, &env, &info, &msg.sender, &msg.token_id)?;
+        // println!("msg: {msg}");
+        // let incoming_nft_id = msg.token_id;
+        // let previous_owner = msg.sender;
+
+        Ok(Response::new()
+            .add_attribute("action", "receive_nft")
+            .add_attribute("new_owner", msg.sender)
+            .add_attribute("new_token_id", msg.token_id))
     }
 }
 

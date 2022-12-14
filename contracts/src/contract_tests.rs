@@ -315,6 +315,35 @@ fn sending_nft() {
 }
 
 #[test]
+fn receive_nft() {
+    let mut deps = mock_dependencies();
+    let contract = setup_contract(deps.as_mut());
+
+    let token_id = "dakkadakka".to_string();
+
+    let sender = mock_info("venus", &[]);
+    let msg = to_binary("You now have the melting power").unwrap();
+
+    let payload = Cw721ReceiveMsg {
+        sender: String::from("mars"),
+        token_id: token_id.clone(),
+        msg,
+    };
+
+    let rcv_msg = ExecuteMsg::ReceiveNft { msg: payload };
+    let res = contract
+        .execute(deps.as_mut(), mock_env(), sender, rcv_msg)
+        .unwrap();
+
+    assert_eq!(
+        res,
+        Response::new()
+            .add_attribute("action", "receive_nft")
+            .add_attribute("new_owner", "mars")
+            .add_attribute("new_token_id", token_id)
+    );
+}
+#[test]
 fn approving_revoking() {
     let mut deps = mock_dependencies();
     let contract = setup_contract(deps.as_mut());
