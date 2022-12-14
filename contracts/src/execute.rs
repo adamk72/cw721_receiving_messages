@@ -13,6 +13,7 @@ use crate::state::{Approval, Cw721Contract, TokenInfo};
 // Version info for migration
 const CONTRACT_NAME: &str = "crates.io:cw721-base";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
+const TOKEN_PREFIX: &str = "foo2dabar";
 
 impl<'a, T, C, E, Q> Cw721Contract<'a, T, C, E, Q>
 where
@@ -105,8 +106,16 @@ where
             token_uri: msg.token_uri,
             extension: msg.extension,
         };
+
+        let token_id = msg
+            .token_id
+            .unwrap_or_else(|| match self.token_count(deps.storage) {
+                Ok(val) => format!("{}{}", TOKEN_PREFIX, val),
+                Err(e) => panic!("Token count error: {:?}", e), // @TODO: adamk: there's certainly a better way to handle this; I'm just not sure what that is. Why would token_count not be initialized at this point?
+            });
+
         self.tokens
-            .update(deps.storage, &msg.token_id, |old| match old {
+            .update(deps.storage, &token_id, |old| match old {
                 Some(_) => Err(ContractError::Claimed {}),
                 None => Ok(token),
             })?;
@@ -117,7 +126,7 @@ where
             .add_attribute("action", "mint")
             .add_attribute("minter", info.sender)
             .add_attribute("owner", msg.owner)
-            .add_attribute("token_id", msg.token_id))
+            .add_attribute("token_id", &token_id))
     }
 
     fn receive_nft(

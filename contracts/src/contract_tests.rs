@@ -75,7 +75,7 @@ fn minting() {
     let token_uri = "https://www.merriam-webster.com/dictionary/petrify".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id.clone(),
+        token_id: Some(token_id.clone()),
         owner: String::from("medusa"),
         token_uri: Some(token_uri.clone()),
         extension: None,
@@ -127,7 +127,7 @@ fn minting() {
 
     // Cannot mint same token_id again
     let mint_msg2 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id.clone(),
+        token_id: Some(token_id.clone()),
         owner: String::from("hercules"),
         token_uri: None,
         extension: None,
@@ -143,6 +143,22 @@ fn minting() {
     let tokens = contract.all_tokens(deps.as_ref(), None, None).unwrap();
     assert_eq!(1, tokens.tokens.len());
     assert_eq!(vec![token_id], tokens.tokens);
+
+    // Token ID is not supplied
+    let mint_msg3 = ExecuteMsg::Mint(MintMsg::<Extension> {
+        token_id: None,
+        owner: String::from("hercules"),
+        token_uri: None,
+        extension: None,
+    });
+    let allowed = mock_info(MINTER, &[]);
+    contract
+        .execute(deps.as_mut(), mock_env(), allowed, mint_msg3)
+        .unwrap();
+
+    // Double check the new token actually got added.
+    let tokens = contract.all_tokens(deps.as_ref(), None, None).unwrap();
+    assert_eq!(2, tokens.tokens.len());
 }
 
 #[test]
@@ -154,7 +170,7 @@ fn burning() {
     let token_uri = "https://www.merriam-webster.com/dictionary/petrify".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id.clone(),
+        token_id: Some(token_id.clone()),
         owner: MINTER.to_string(),
         token_uri: Some(token_uri),
         extension: None,
@@ -204,7 +220,7 @@ fn transferring_nft() {
     let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id.clone(),
+        token_id: Some(token_id.clone()),
         owner: String::from("venus"),
         token_uri: Some(token_uri),
         extension: None,
@@ -258,7 +274,7 @@ fn sending_nft() {
     let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id.clone(),
+        token_id: Some(token_id.clone()),
         owner: String::from("venus"),
         token_uri: Some(token_uri),
         extension: None,
@@ -353,7 +369,7 @@ fn approving_revoking() {
     let token_uri = "https://www.merriam-webster.com/dictionary/grow".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id.clone(),
+        token_id: Some(token_id.clone()),
         owner: String::from("demeter"),
         token_uri: Some(token_uri),
         extension: None,
@@ -500,7 +516,7 @@ fn approving_all_revoking_all() {
     let token_uri2 = "https://www.merriam-webster.com/dictionary/grow2".to_string();
 
     let mint_msg1 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id1.clone(),
+        token_id: Some(token_id1.clone()),
         owner: String::from("demeter"),
         token_uri: Some(token_uri1),
         extension: None,
@@ -512,7 +528,7 @@ fn approving_all_revoking_all() {
         .unwrap();
 
     let mint_msg2 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id2.clone(),
+        token_id: Some(token_id2.clone()),
         owner: String::from("demeter"),
         token_uri: Some(token_uri2),
         extension: None,
@@ -716,7 +732,7 @@ fn query_tokens_by_owner() {
     let token_id3 = "sing".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id1.clone(),
+        token_id: Some(token_id1.clone()),
         owner: demeter.clone(),
         token_uri: None,
         extension: None,
@@ -726,7 +742,7 @@ fn query_tokens_by_owner() {
         .unwrap();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id2.clone(),
+        token_id: Some(token_id2.clone()),
         owner: ceres.clone(),
         token_uri: None,
         extension: None,
@@ -736,7 +752,7 @@ fn query_tokens_by_owner() {
         .unwrap();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: token_id3.clone(),
+        token_id: Some(token_id3.clone()),
         owner: demeter.clone(),
         token_uri: None,
         extension: None,

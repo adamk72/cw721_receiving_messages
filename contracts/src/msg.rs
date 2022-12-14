@@ -91,8 +91,8 @@ impl fmt::Display for Cw721ReceiveMsg {
 
 #[cw_serde]
 pub struct MintMsg<T> {
-    /// Unique ID of the NFT
-    pub token_id: String,
+    /// Unique ID of the NFT; if this doesn't exist, create a new arbitrary one.
+    pub token_id: Option<String>,
     /// The owner of the newly minted NFT
     pub owner: String,
     /// Universal resource identifier for this NFT
