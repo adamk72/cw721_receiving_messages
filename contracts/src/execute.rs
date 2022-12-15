@@ -98,35 +98,13 @@ where
         if info.sender != minter {
             return Err(ContractError::Unauthorized {});
         }
-
-        // create the token
-        let token = TokenInfo {
-            owner: deps.api.addr_validate(&msg.owner)?,
-            approvals: vec![],
-            token_uri: msg.token_uri,
-            extension: msg.extension,
-        };
-
-        let token_id = msg
-            .token_id
-            .unwrap_or_else(|| match self.token_count(deps.storage) {
-                Ok(val) => format!("{}{}", TOKEN_PREFIX, val),
-                Err(e) => panic!("Token count error: {:?}", e), // @TODO: adamk: there's certainly a better way to handle this; I'm just not sure what that is. Why would token_count not be initialized at this point?
-            });
-
-        self.tokens
-            .update(deps.storage, &token_id, |old| match old {
-                Some(_) => Err(ContractError::Claimed {}),
-                None => Ok(token),
-            })?;
-
-        self.increment_tokens(deps.storage)?;
+        let res = self._mint(deps, msg.clone());
 
         Ok(Response::new()
             .add_attribute("action", "mint")
             .add_attribute("minter", info.sender)
             .add_attribute("owner", msg.owner)
-            .add_attribute("token_id", &token_id))
+            .add_attribute("token_id", &res.unwrap()))
     }
 
     fn receive_nft(
@@ -309,6 +287,32 @@ where
     E: CustomMsg,
     Q: CustomMsg,
 {
+    pub fn _mint(&self, deps: DepsMut, msg: MintMsg<T>) -> Result<String, ContractError> {
+        // create the token
+        let token = TokenInfo {
+            owner: deps.api.addr_validate(&msg.owner)?,
+            approvals: vec![],
+            token_uri: msg.token_uri,
+            extension: msg.extension,
+        };
+
+        let token_id = msg
+            .token_id
+            .unwrap_or_else(|| match self.token_count(deps.storage) {
+                Ok(val) => format!("{}{}", TOKEN_PREFIX, val),
+                Err(e) => panic!("Token count error: {:?}", e), // @TODO: adamk: there's certainly a better way to handle this; I'm just not sure what that is. Why would token_count not be initialized at this point?
+            });
+
+        self.tokens
+            .update(deps.storage, &token_id, |old| match old {
+                Some(_) => Err(ContractError::Claimed {}),
+                None => Ok(token),
+            })?;
+
+        self.increment_tokens(deps.storage)?;
+
+        Ok(token_id)
+    }
     pub fn _transfer_nft(
         &self,
         deps: DepsMut,
