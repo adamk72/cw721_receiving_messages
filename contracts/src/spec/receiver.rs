@@ -1,7 +1,9 @@
 use schemars::JsonSchema;
 
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{to_binary, Binary, CosmosMsg, StdResult, WasmMsg};
+use cosmwasm_std::{to_binary, Binary, CosmosMsg, Empty, StdResult, WasmMsg};
+
+use crate::ExecuteMsg;
 
 /// Cw721ReceiveMsg should be de/serialized under `Receive()` variant in a ExecuteMsg
 #[cw_serde]
@@ -14,7 +16,7 @@ pub struct Cw721ReceiveMsg {
 impl Cw721ReceiveMsg {
     /// serializes the message
     pub fn into_binary(self) -> StdResult<Binary> {
-        let msg = ReceiverExecuteMsg::ReceiveNft(self);
+        let msg: ExecuteMsg<Option<Empty>, Empty> = ExecuteMsg::ReceiveNft { msg: self };
         to_binary(&msg)
     }
 
@@ -33,9 +35,9 @@ impl Cw721ReceiveMsg {
     }
 }
 
-/// This is just a helper to properly serialize the above message.
-/// The actual receiver should include this variant in the larger ExecuteMsg enum
-#[cw_serde]
-enum ReceiverExecuteMsg {
-    ReceiveNft(Cw721ReceiveMsg),
-}
+//This is just a helper to properly serialize the above message.
+// The actual receiver should include this variant in the larger ExecuteMsg enum
+// #[cw_serde]
+// enum ReceiverExecuteMsg {
+//     ReceiveNft(Cw721ReceiveMsg),
+// }

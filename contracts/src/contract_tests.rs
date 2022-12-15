@@ -1,15 +1,18 @@
 #![cfg(test)]
-use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-use cosmwasm_std::{from_binary, to_binary, CosmosMsg, DepsMut, Empty, Response, WasmMsg};
-
+use crate::entry::{execute, instantiate, query};
 use crate::spec::{
     Approval, ApprovalResponse, ContractInfoResponse, Cw721Query, Cw721ReceiveMsg, Expiration,
     NftInfoResponse, OperatorsResponse, OwnerOfResponse,
 };
-
 use crate::{
     ContractError, Cw721Contract, ExecuteMsg, Extension, InstantiateMsg, MintMsg, QueryMsg,
 };
+use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
+use cosmwasm_std::{
+    from_binary, to_binary, Addr, CosmosMsg, DepsMut, Empty, Event, Response, WasmMsg,
+};
+
+use cw_multi_test::{App, Contract, ContractWrapper, Executor};
 
 const MINTER: &str = "merlin";
 const CONTRACT_NAME: &str = "Magic Power";
@@ -268,7 +271,6 @@ fn transferring_nft() {
 fn sending_nft() {
     let mut deps = mock_dependencies();
     let contract = setup_contract(deps.as_mut());
-
     // Mint a token
     let token_id = "melt".to_string();
     let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
@@ -318,6 +320,7 @@ fn sending_nft() {
         }
         m => panic!("Unexpected message type: {:?}", m),
     }
+
     // and make sure this is the request sent by the contract
     assert_eq!(
         res,
@@ -331,17 +334,95 @@ fn sending_nft() {
 }
 
 #[test]
+fn send_and_receive_nft() {
+    let alpha_owner = Addr::unchecked("venus");
+    let omega_owner = Addr::unchecked("mars");
+    let token_owner = Addr::unchecked("hercules");
+
+    /***** Setup *****/
+    // Alpha App and contract
+    let mut app = App::default();
+    let msg = InstantiateMsg {
+        name: "Alpha".to_string(),
+        symbol: SYMBOL.to_string(),
+        minter: String::from(MINTER),
+    };
+
+    pub fn alpha_contract_box() -> Box<dyn Contract<Empty>> {
+        let contract = ContractWrapper::new(execute, instantiate, query);
+        Box::new(contract)
+    }
+    let code = app.store_code(alpha_contract_box());
+    let alpha_contract = app
+        .instantiate_contract(code, alpha_owner.clone(), &msg, &[], "Echo", None)
+        .unwrap();
+
+    let msg = InstantiateMsg {
+        name: "Omega".to_string(),
+        symbol: SYMBOL.to_string(),
+        minter: String::from(MINTER),
+    };
+    pub fn omega_contract_box() -> Box<dyn Contract<Empty>> {
+        let contract = ContractWrapper::new(execute, instantiate, query);
+        Box::new(contract)
+    }
+    let code = app.store_code(omega_contract_box());
+    let omega_contract = app
+        .instantiate_contract(code, omega_owner.clone(), &msg, &[], "Echo", None)
+        .unwrap();
+
+    /***** Actual testing *****/
+    // First, mint a token called "dakkadakka"
+    let token_id = "dakkadakka".to_string();
+    let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
+
+    let mint_msg: ExecuteMsg<Option<Empty>, Empty> = ExecuteMsg::Mint(MintMsg::<Extension> {
+        token_id: Some(token_id.clone()),
+        owner: String::from(&token_owner),
+        token_uri: Some(token_uri),
+        extension: None,
+    });
+
+    app.execute_contract(
+        Addr::unchecked(MINTER),
+        alpha_contract.clone(),
+        &mint_msg,
+        &[],
+    )
+    .unwrap();
+
+    // Now we have the dakkadakka token, so send to the same contract
+    let msg = to_binary("Mars needs Venus").unwrap();
+
+    // Send the nft to the omega_contract
+    let send_msg: ExecuteMsg<Option<Empty>, Empty> = ExecuteMsg::SendNft {
+        contract: String::from(&omega_contract),
+        token_id: token_id.clone(),
+        msg: msg.clone(),
+    };
+
+    let res = app
+        .execute_contract(token_owner.clone(), alpha_contract.clone(), &send_msg, &[])
+        .unwrap();
+
+    res.assert_event(&Event::new("wasm").add_attribute("action", "receive_nft"));
+    res.assert_event(&Event::new("wasm").add_attribute("new_owner", String::from(&omega_contract)));
+    res.assert_event(&Event::new("wasm").add_attribute("new_token_id", token_id.clone()));
+}
+
+#[test]
 fn receive_nft() {
+    let sender_name = "venus";
     let mut deps = mock_dependencies();
     let contract = setup_contract(deps.as_mut());
 
     let token_id = "dakkadakka".to_string();
 
-    let sender = mock_info("venus", &[]);
+    let sender = mock_info(sender_name, &[]);
     let msg = to_binary("You now have the melting power").unwrap();
 
     let payload = Cw721ReceiveMsg {
-        sender: String::from("mars"),
+        sender: String::from(sender_name),
         token_id: token_id.clone(),
         msg,
     };
@@ -355,7 +436,7 @@ fn receive_nft() {
         res,
         Response::new()
             .add_attribute("action", "receive_nft")
-            .add_attribute("new_owner", "mars")
+            .add_attribute("new_owner", MOCK_CONTRACT_ADDR)
             .add_attribute("new_token_id", token_id)
     );
 }

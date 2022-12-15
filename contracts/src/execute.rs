@@ -98,19 +98,20 @@ where
         if info.sender != minter {
             return Err(ContractError::Unauthorized {});
         }
-        let res = self._mint(deps, msg.clone());
+
+        let token_id = self._mint(deps, msg.clone())?;
 
         Ok(Response::new()
             .add_attribute("action", "mint")
             .add_attribute("minter", info.sender)
             .add_attribute("owner", msg.owner)
-            .add_attribute("token_id", &res.unwrap()))
+            .add_attribute("token_id", token_id))
     }
 
     fn receive_nft(
         &self,
         _deps: DepsMut,
-        _env: Env,
+        env: Env,
         _info: MessageInfo,
         msg: Cw721ReceiveMsg,
     ) -> Result<Response<C>, ContractError> {
@@ -118,13 +119,12 @@ where
         // verify_authorized_nft_contract(deps.storage, &info.sender)?;
 
         // self._transfer_nft(deps, &env, &info, &msg.sender, &msg.token_id)?;
-        // println!("msg: {msg}");
         // let incoming_nft_id = msg.token_id;
         // let previous_owner = msg.sender;
 
         Ok(Response::new()
             .add_attribute("action", "receive_nft")
-            .add_attribute("new_owner", msg.sender)
+            .add_attribute("new_owner", env.contract.address)
             .add_attribute("new_token_id", msg.token_id))
     }
 }
@@ -313,6 +313,7 @@ where
 
         Ok(token_id)
     }
+
     pub fn _transfer_nft(
         &self,
         deps: DepsMut,
