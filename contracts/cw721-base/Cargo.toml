@@ -30,5 +30,6 @@ cw-storage-plus = { workspace = true }
 schemars        = { workspace = true }
 serde           = { workspace = true }
 thiserror       = { workspace = true }
+universe        = { workspace = true }
+[dev-dependencies]
 cw-multi-test   = { workspace = true }
-universe        = { version = "0.1.0", path = "../packages/universe"}
