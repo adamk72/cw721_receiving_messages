@@ -5,7 +5,8 @@ use crate::spec::{
     NftInfoResponse, OperatorsResponse, OwnerOfResponse,
 };
 use crate::{
-    ContractError, Cw721Contract, ExecuteMsg, Extension, InstantiateMsg, MintMsg, QueryMsg,
+    ContractError, Cw721Contract, ExecuteMsg, Extension, InstantiateMsg, MintMsg, OpenMetadata,
+    QueryMsg,
 };
 use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
 use cosmwasm_std::{
@@ -75,6 +76,7 @@ fn minting() {
     let contract = setup_contract(deps.as_mut());
 
     let token_id = "petrify".to_string();
+    let token_id2 = "extension".to_string();
     let token_uri = "https://www.merriam-webster.com/dictionary/petrify".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
@@ -94,7 +96,7 @@ fn minting() {
     // minter can mint
     let allowed = mock_info(MINTER, &[]);
     let _ = contract
-        .execute(deps.as_mut(), mock_env(), allowed, mint_msg)
+        .execute(deps.as_mut(), mock_env(), allowed.clone(), mint_msg)
         .unwrap();
 
     // ensure num tokens increases
@@ -138,30 +140,56 @@ fn minting() {
 
     let allowed = mock_info(MINTER, &[]);
     let err = contract
-        .execute(deps.as_mut(), mock_env(), allowed, mint_msg2)
+        .execute(deps.as_mut(), mock_env(), allowed.clone(), mint_msg2)
         .unwrap_err();
     assert_eq!(err, ContractError::Claimed {});
 
     // list the token_ids
     let tokens = contract.all_tokens(deps.as_ref(), None, None).unwrap();
     assert_eq!(1, tokens.tokens.len());
-    assert_eq!(vec![token_id], tokens.tokens);
+    assert_eq!(vec![token_id.clone()], tokens.tokens);
+
+    // with Extension
+
+    let token_uri2 = "https://starships.example.com/Starship/Enterprise.json".to_string();
+    let mint_msg3 = ExecuteMsg::Mint(MintMsg::<Extension> {
+        token_id: Some(token_id2.clone()),
+        owner: "mercury".to_string(),
+        token_uri: Some(token_uri2.clone().into()),
+        extension: Some(OpenMetadata {
+            description: Some("Spaceship with Warp Drive".into()),
+            name: Some("Starship USS Enterprise".to_string()),
+            ..OpenMetadata::default()
+        }),
+    });
+    contract
+        .execute(deps.as_mut(), mock_env(), allowed.clone(), mint_msg3)
+        .unwrap();
+    let res = contract.nft_info(deps.as_ref(), token_id2.into()).unwrap();
+    assert_eq!(res.token_uri.unwrap(), token_uri2);
+    assert_eq!(
+        res.extension.unwrap(),
+        OpenMetadata {
+            description: Some("Spaceship with Warp Drive".into()),
+            name: Some("Starship USS Enterprise".to_string()),
+            ..OpenMetadata::default()
+        }
+    );
 
     // Token ID is not supplied
-    let mint_msg3 = ExecuteMsg::Mint(MintMsg::<Extension> {
+    let mint_msg4 = ExecuteMsg::Mint(MintMsg::<Extension> {
         token_id: None,
         owner: String::from("hercules"),
         token_uri: None,
         extension: None,
     });
-    let allowed = mock_info(MINTER, &[]);
     contract
-        .execute(deps.as_mut(), mock_env(), allowed, mint_msg3)
+        .execute(deps.as_mut(), mock_env(), allowed, mint_msg4)
         .unwrap();
 
     // Double check the new token actually got added.
     let tokens = contract.all_tokens(deps.as_ref(), None, None).unwrap();
-    assert_eq!(2, tokens.tokens.len());
+    assert_eq!(3, tokens.tokens.len());
 }
 
 #[test]
@@ -376,12 +404,13 @@ fn send_and_receive_nft() {
     let token_id = "dakkadakka".to_string();
     let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
 
-    let mint_msg: ExecuteMsg<Option<Empty>, Empty> = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
-        owner: String::from(&token_owner),
-        token_uri: Some(token_uri),
-        extension: None,
-    });
+    let mint_msg: ExecuteMsg<Option<OpenMetadata>, Empty> =
+        ExecuteMsg::Mint(MintMsg::<Extension> {
+            token_id: Some(token_id.clone()),
+            owner: String::from(&token_owner),
+            token_uri: Some(token_uri),
+            extension: None,
+        });
 
     app.execute_contract(
         Addr::unchecked(MINTER),
