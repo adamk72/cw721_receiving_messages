@@ -31,3 +31,4 @@ schemars        = { workspace = true }
 serde           = { workspace = true }
 thiserror       = { workspace = true }
 cw-multi-test   = { workspace = true }
+universe        = { version = "0.1.0", path = "../packages/universe"}
