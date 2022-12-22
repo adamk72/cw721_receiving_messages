@@ -14,7 +14,7 @@ cosmwasm-schema = "1.1.5"
 cosmwasm-std    = "1.1.5"
 cw2             = "0.16.0"
 cw20            = "0.16.0"
-# cw721           = { version = "0.16.0", path = "./packages/cw721" }
+cw721           = { version = "0.16.0", path = "./packages/cw721" }
 cw721-base      = { version = "0.16.0", path = "./contracts/cw721-base" }
 cw-storage-plus = "0.16.0"
 cw-utils        = "0.16.0"
@@ -25,6 +25,10 @@ cw-multi-test   = "0.16.1"
 universe        = { version = "0.1.0", path = "./packages/universe"}
 
 [profile.release.package.cw721-base]
+codegen-units = 1
+incremental = false
+
+[profile.release.package.cw721-visa]
 codegen-units = 1
 incremental = false
 
