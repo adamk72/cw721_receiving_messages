@@ -1,7 +1,8 @@
 #![cfg(test)]
 
 use crate::{
-    contract::{instantiate, Cw721VisaContract, ExecuteMsg, VisaMetadata},
+    contract::{instantiate, Cw721VisaContract, ExecuteMsg},
+    metadata::VisaMetadata,
     msg::InstantiateMsg,
 };
 use cosmwasm_std::{

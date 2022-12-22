@@ -1,8 +1,8 @@
+use crate::metadata::VisaMetadata;
 use crate::{
     msg::InstantiateMsg,
     state::{Config, CONFIG},
 };
-use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Empty;
 use cw2::set_contract_version;
 pub use cw721_base::InstantiateMsg as Cw721BaseInstantiateMsg;
@@ -11,23 +11,6 @@ pub type Cw721NonTransferableContract<'a> = Cw721Contract<'a, Extension, Empty, 
 // Version info for migration
 const CONTRACT_NAME: &str = "cw721-visa";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
-
-#[cw_serde]
-pub struct Trait {
-    pub display_type: Option<String>,
-    pub trait_type: String,
-    pub value: String,
-}
-
-// see: https://docs.opensea.io/docs/metadata-standards
-#[cw_serde]
-#[derive(Default)]
-pub struct VisaMetadata {
-    pub image: Option<String>,
-    pub name: Option<String>,
-    pub attributes: Option<Vec<Trait>>,
-    pub origin: Option<String>,
-}
 
 pub type Extension = Option<VisaMetadata>;
 
