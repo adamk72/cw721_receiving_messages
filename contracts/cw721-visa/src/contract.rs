@@ -22,21 +22,16 @@ pub struct Trait {
 // see: https://docs.opensea.io/docs/metadata-standards
 #[cw_serde]
 #[derive(Default)]
-pub struct Metadata {
+pub struct VisaMetadata {
     pub image: Option<String>,
-    pub image_data: Option<String>,
-    pub external_url: Option<String>,
-    pub description: Option<String>,
     pub name: Option<String>,
     pub attributes: Option<Vec<Trait>>,
-    pub background_color: Option<String>,
-    pub animation_url: Option<String>,
-    pub youtube_url: Option<String>,
+    pub origin: Option<String>,
 }
 
-pub type Extension = Option<Metadata>;
+pub type Extension = Option<VisaMetadata>;
 
-pub type Cw721MetadataContract<'a> = cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Empty>;
+pub type Cw721VisaContract<'a> = cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Empty>;
 pub type ExecuteMsg = cw721_base::ExecuteMsg<Extension, Empty>;
 pub type QueryMsg = cw721_base::QueryMsg<Empty>;
 
@@ -87,10 +82,10 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    Cw721MetadataContract::default().execute(deps, env, info, msg)
+    Cw721VisaContract::default().execute(deps, env, info, msg)
 }
 
 #[entry_point]
 pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
-    Cw721MetadataContract::default().query(deps, env, msg)
+    Cw721VisaContract::default().query(deps, env, msg)
 }
