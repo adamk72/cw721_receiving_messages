@@ -1,4 +1,8 @@
-use crate::{error::ContractError, state::CONFIG};
+use crate::{
+    error::ContractError,
+    msg::{PreapproveVisaMsg, Visa},
+    state::{CONFIG, VISAS},
+};
 use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
 use cw721_base::spec::Cw721ReceiveMsg;
 use universe::species::{SapienceScale, Sapient};
@@ -9,6 +13,17 @@ pub fn receive_visa(
     env: Env,
     _info: MessageInfo,
 ) -> Result<Response, ContractError> {
+    // let sender = deps.api.addr_validate(&owner)?;
+    // let visa = VISAS
+    //     .prefix(&sender)
+    //     .filter(|v| v == msg.token_id)
+    //     .collect();
+    /*  We need to check for the following:
+        1. That the owner-sender is on some sort of approved list.
+        2. That the token_id has been pre-vetted.
+        3. That the token_id and the sender match on the approved list.
+        4. That the token_id isn't already on the list.
+    */
     Ok(Response::new()
         .add_attribute("action", "receive_visa")
         .add_attribute("new_owner", env.contract.address)
@@ -68,4 +83,26 @@ pub fn set_sapient_names(
     config.planet_sapients = to;
     CONFIG.save(deps.storage, &config)?;
     Ok(Response::new().add_attribute("action", "set_sapient_names"))
+}
+
+pub fn preapprove_visa(
+    visa_msg: PreapproveVisaMsg,
+    deps: DepsMut,
+    info: MessageInfo,
+) -> Result<Response, ContractError> {
+    /*  We need to:
+        1. Check back with the cw721 contract to get the visa info based on token_id.
+        2. Confirm the user is under the sapience value or not on the excluded list.
+        3. Confirm the the user is not already on the visa list.
+        4. Add to the VISAS list as preapproved.
+    */
+
+    let visa = Visa {
+        approved: false,
+        details: visa_msg.details,
+    };
+
+    VISAS.save(deps.storage, (&info.sender, &info.sender), &visa)?;
+
+    Ok(Response::new().add_attribute("action", "preapprove_visa"))
 }

@@ -1,3 +1,4 @@
+use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Addr;
 use cw721_base::spec::Cw721ReceiveMsg;
 use serde::{Deserialize, Serialize};
@@ -8,12 +9,32 @@ pub enum QueryMsg {
     MinimumSapience {},
 }
 
+#[cw_serde]
+pub struct PreapproveVisaMsg {
+    pub details: VisaDetails,
+}
+
+#[cw_serde]
+pub struct VisaDetails {
+    ape: Addr,
+    contract: Addr,
+    holder: Addr,
+    token_id: String,
+}
+
+#[cw_serde]
+pub struct Visa {
+    pub approved: bool,
+    pub details: VisaDetails,
+}
+
 pub enum ExecuteMsg {
     SetPlanetName { to: String },
     SetSapientNames { to: Vec<Sapient> },
     SetMinimumSapience { to: SapienceScale },
     JumpRingTravel { to: Addr },
     ReceiveVisa { msg: Cw721ReceiveMsg },
+    PreapproveVisa { visa: PreapproveVisaMsg },
 }
 
 pub struct InstantiateMsg {
