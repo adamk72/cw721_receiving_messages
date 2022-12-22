@@ -1,7 +1,20 @@
 use crate::error::ContractError;
 use crate::state::config;
-use cosmwasm_std::{Addr, DepsMut, MessageInfo, Response};
+use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
+use cw721_base::spec::Cw721ReceiveMsg;
 use universe::species::{SapienceScale, Sapient};
+
+pub fn receive_visa(
+    msg: Cw721ReceiveMsg,
+    _deps: DepsMut,
+    env: Env,
+    _info: MessageInfo,
+) -> Result<Response, ContractError> {
+    Ok(Response::new()
+        .add_attribute("action", "receive_visa")
+        .add_attribute("new_owner", env.contract.address)
+        .add_attribute("new_token_id", msg.token_id))
+}
 
 pub fn initiate_jump_ring_travel(
     _to: Addr,

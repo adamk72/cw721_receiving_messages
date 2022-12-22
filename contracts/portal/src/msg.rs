@@ -1,4 +1,5 @@
 use cosmwasm_std::Addr;
+use cw721_base::spec::Cw721ReceiveMsg;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +17,7 @@ pub enum ExecuteMsg {
     SetSapientNames { to: Vec<Sapient> },
     SetMinimumSapience { to: SapienceScale },
     JumpRingTravel { to: Addr },
+    ReceiveVisa { msg: Cw721ReceiveMsg },
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
