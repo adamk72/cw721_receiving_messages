@@ -2,13 +2,12 @@ use cosmwasm_std::Addr;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, JsonSchema, Clone)]
 pub struct Species {
     pub name: String,
     pub sapience_level: SapienceScale,
 }
 
-#[derive(Serialize, Deserialize, JsonSchema, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub enum SapienceScale {
     None = 0,   // bugs
     Low = 1,    // cats, dogs
@@ -27,7 +26,6 @@ impl SapienceScale {
     }
 }
 
-#[derive(Serialize, Deserialize, JsonSchema)]
 pub struct Traveler {
     pub name: String,
     pub home: Addr,
@@ -35,13 +33,13 @@ pub struct Traveler {
     pub cyberdized: bool,
 }
 
-#[derive(Serialize, Deserialize, JsonSchema)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SapienceResponse {
     pub level: SapienceScale,
 }
 
-#[derive(Serialize, Deserialize, JsonSchema)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct Sapient {
-    name: String,
-    telepathic: bool,
+    // name: String,
+    // telepathic: bool,
 }

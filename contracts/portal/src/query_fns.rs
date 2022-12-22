@@ -1,12 +1,11 @@
-use crate::msg::JumpRingCheckResponse;
-use crate::state::config_read;
+use crate::{msg::JumpRingCheckResponse, state::CONFIG};
 use cosmwasm_std::{to_binary, Binary, Deps, StdResult};
 use universe::species::{SapienceResponse, Traveler};
 
 pub fn minimum_sapience(deps: Deps) -> StdResult<Binary> {
-    let state = config_read(deps.storage).load()?;
+    let config = CONFIG.load(deps.storage)?;
     let out = to_binary(&SapienceResponse {
-        level: state.minimum_sapience,
+        level: config.minimum_sapience,
     })?;
     Ok(out)
 }

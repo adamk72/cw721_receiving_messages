@@ -8,7 +8,7 @@ use crate::execute_fns::{
 };
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::query_fns::{jump_ring_check, minimum_sapience};
-use crate::state::{config, State};
+use crate::state::{Config, CONFIG};
 
 #[entry_point]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
@@ -41,14 +41,15 @@ pub fn instantiate(
     info: MessageInfo,
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
-    let state = State {
+    let config = Config {
         owner: info.sender,
         planet_name: msg.planet_name,
         planet_sapients: msg.planet_sapients,
         minimum_sapience: msg.minimum_sapience,
+        visas: None,
     };
-    config(deps.storage).save(&state)?;
+    CONFIG.save(deps.storage, &config)?;
     Ok(Response::new()
-        .add_attribute("owner", state.owner)
-        .add_attribute("minimum_sapience", state.minimum_sapience.as_str()))
+        .add_attribute("owner", config.owner)
+        .add_attribute("minimum_sapience", config.minimum_sapience.as_str()))
 }

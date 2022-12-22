@@ -1,5 +1,4 @@
-use crate::error::ContractError;
-use crate::state::config;
+use crate::{error::ContractError, state::CONFIG};
 use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
 use cw721_base::spec::Cw721ReceiveMsg;
 use universe::species::{SapienceScale, Sapient};
@@ -29,13 +28,15 @@ pub fn set_minimum_sapience(
     deps: DepsMut,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    let mut state = config(deps.storage).load()?;
-    if info.sender != state.owner {
+    let mut config = CONFIG.load(deps.storage)?;
+
+    if info.sender != config.owner {
         return Err(ContractError::Unauthorized {});
     }
 
-    state.minimum_sapience = to;
-    config(deps.storage).save(&state)?;
+    config.minimum_sapience = to;
+
+    CONFIG.save(deps.storage, &config)?;
 
     Ok(Response::default())
 }
@@ -45,12 +46,12 @@ pub fn set_planet_name(
     deps: DepsMut,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    let mut state = config(deps.storage).load()?;
-    if info.sender != state.owner {
+    let mut config = CONFIG.load(deps.storage)?;
+    if info.sender != config.owner {
         return Err(ContractError::Unauthorized {});
     }
-    state.planet_name = to.clone();
-    config(deps.storage).save(&state)?;
+    config.planet_name = to.clone();
+    CONFIG.save(deps.storage, &config)?;
     Ok(Response::new().add_attribute("action", "set_planet_name"))
 }
 
@@ -59,12 +60,12 @@ pub fn set_sapient_names(
     deps: DepsMut,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    let mut state = config(deps.storage).load()?;
-    if info.sender != state.owner {
+    let mut config = CONFIG.load(deps.storage)?;
+    if info.sender != config.owner {
         return Err(ContractError::Unauthorized {});
     }
 
-    state.planet_sapients = to;
-    config(deps.storage).save(&state)?;
+    config.planet_sapients = to;
+    CONFIG.save(deps.storage, &config)?;
     Ok(Response::new().add_attribute("action", "set_sapient_names"))
 }
