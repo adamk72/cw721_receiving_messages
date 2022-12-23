@@ -32,10 +32,26 @@ pub fn receive_visa(
 
 pub fn initiate_jump_ring_travel(
     _to: Addr,
-    _deps: DepsMut,
-    _info: MessageInfo,
+    deps: DepsMut,
+    info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    Ok(Response::default())
+    /*  The visa has to be approved for this to happen.
+        1. check that the sender is the visas list
+        2. check that the visa is approved (which happens when they send their visa to this contract)
+    */
+
+    let visa = match VISAS.load(deps.storage, (&info.sender, &info.sender)) {
+        Ok(v) => v,
+        Err(_) => return Err(ContractError::NotOnList {}),
+    };
+
+    if !visa.approved {
+        return Err(ContractError::Unapproved {});
+    }
+
+    Ok(Response::new()
+        .add_attribute("action", "initiate_jump_ring_travel")
+        .add_attribute("traveler", &info.sender))
 }
 
 pub fn set_minimum_sapience(
@@ -95,6 +111,8 @@ pub fn preapprove_visa(
         2. Confirm the user is under the sapience value or not on the excluded list.
         3. Confirm the the user is not already on the visa list.
         4. Add to the VISAS list as preapproved.
+
+        The visa will be approved once the the nft is sent over.
     */
 
     let visa = Visa {

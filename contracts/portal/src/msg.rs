@@ -16,10 +16,10 @@ pub struct PreapproveVisaMsg {
 
 #[cw_serde]
 pub struct VisaDetails {
-    ape: Addr,
-    contract: Addr,
-    holder: Addr,
-    token_id: String,
+    pub ape: Addr,
+    pub contract: Addr,
+    pub holder: Addr,
+    pub token_id: String,
 }
 
 #[cw_serde]
