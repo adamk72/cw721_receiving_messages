@@ -153,6 +153,11 @@ module.exports = {
  * 5. wasmd tx wasm instantiate $CODE_ID "$INIT" --from wallet --label "name service" $TXFLAG -y --no-admin
  * 6. CONTRACT=$(wasmd query wasm list-contract-by-code $CODE_ID $NODE --output json | jq -r '.contracts[-1]')
  *  - 
+ * Other notes: 
+ *    - https://docs.archway.io/docs/create/cli/daemon/#archwayd-for-developers
+ *    - Get CODE_ID after the fact: 
+ *      - wasmd query txs --events 'message.sender=wasm1pa7r7e9uhdqzuxjejryt0yyrn55a5u5z5qqfwm&message.action=/cosmwasm.wasm.v1.MsgInstantiateContract' $NODE
+ *      - @TODO: have `jq` filter out the CODE_ID based on the CONTRACT
  */
 
 
