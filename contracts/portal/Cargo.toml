@@ -27,5 +27,5 @@ thiserror = { workspace = true }
 universe = { workspace = true }
 
 [dev-dependencies]
-cosmwasm-vm = "1.0.0-beta"
 cosmwasm-schema = "1.0.0-beta"
+cw-multi-test   = { workspace = true }

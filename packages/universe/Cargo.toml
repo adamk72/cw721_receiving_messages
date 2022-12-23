@@ -14,5 +14,4 @@ schemars = "0.8"
 serde = { version = "1.0.103" }
 
 [dev-dependencies]
-cosmwasm-vm = "1.0.0-beta"
 cosmwasm-schema = "1.0.0-beta"

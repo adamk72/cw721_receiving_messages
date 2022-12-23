@@ -14,5 +14,5 @@ pub struct Config {
 
 pub const CONFIG: Item<Config> = Item::new("config");
 
-/// Stored as (visa_holder, last_contract_address)
-pub const VISAS: Map<(&Addr, &Addr), Visa> = Map::new("visas");
+/// Stored as visa_holder
+pub const VISAS: Map<&Addr, Visa> = Map::new("visas");

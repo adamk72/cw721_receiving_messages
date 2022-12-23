@@ -2,6 +2,7 @@ use cosmwasm_std::Addr;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct Species {
     pub name: String,
     pub sapience_level: SapienceScale,
@@ -26,6 +27,7 @@ impl SapienceScale {
     }
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct Traveler {
     pub name: String,
     pub home: Addr,

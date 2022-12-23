@@ -4,6 +4,7 @@ use cw721_base::spec::Cw721ReceiveMsg;
 use serde::{Deserialize, Serialize};
 use universe::species::{SapienceScale, Sapient, Traveler};
 
+#[cw_serde]
 pub enum QueryMsg {
     JumpRingPreCheck { traveler: Traveler },
     MinimumSapience {},
@@ -28,6 +29,7 @@ pub struct Visa {
     pub details: VisaDetails,
 }
 
+#[cw_serde]
 pub enum ExecuteMsg {
     SetPlanetName { to: String },
     SetSapientNames { to: Vec<Sapient> },
@@ -37,6 +39,7 @@ pub enum ExecuteMsg {
     PreapproveVisa { visa: PreapproveVisaMsg },
 }
 
+#[cw_serde]
 pub struct InstantiateMsg {
     pub planet_name: String,
     pub planet_sapients: Vec<Sapient>,

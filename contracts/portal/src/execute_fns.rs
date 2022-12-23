@@ -3,15 +3,16 @@ use crate::{
     msg::{PreapproveVisaMsg, Visa},
     state::{CONFIG, VISAS},
 };
-use cosmwasm_std::{Addr, DepsMut, Env, MessageInfo, Response};
-use cw721_base::spec::Cw721ReceiveMsg;
+use cosmwasm_std::{to_binary, Addr, DepsMut, Env, MessageInfo, QueryRequest, Response, WasmQuery};
+use cw721_base::spec::{Cw721QueryMsg, Cw721ReceiveMsg, NftInfoResponse};
+use cw721_visa::metadata::VisaMetadata;
 use universe::species::{SapienceScale, Sapient};
 
 pub fn receive_visa(
     msg: Cw721ReceiveMsg,
-    _deps: DepsMut,
+    deps: DepsMut,
     env: Env,
-    _info: MessageInfo,
+    info: MessageInfo,
 ) -> Result<Response, ContractError> {
     // let sender = deps.api.addr_validate(&owner)?;
     // let visa = VISAS
@@ -23,7 +24,23 @@ pub fn receive_visa(
         2. That the token_id has been pre-vetted.
         3. That the token_id and the sender match on the approved list.
         4. That the token_id isn't already on the list.
+
+        We need to:
+        1. Check back with the cw721 contract to get the visa info based on token_id.
+        2. Confirm the user is under the sapience value or not on the excluded list.
+        3. Confirm the the user is not already on the visa list.
+        4. Add to the VISAS list as preapproved.
     */
+
+    let query = WasmQuery::Smart {
+        contract_addr: info.sender.to_string(),
+        msg: to_binary(&Cw721QueryMsg::NftInfo {
+            token_id: msg.token_id.clone(),
+        })?,
+    };
+
+    let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
+
     Ok(Response::new()
         .add_attribute("action", "receive_visa")
         .add_attribute("new_owner", env.contract.address)
@@ -40,7 +57,7 @@ pub fn initiate_jump_ring_travel(
         2. check that the visa is approved (which happens when they send their visa to this contract)
     */
 
-    let visa = match VISAS.load(deps.storage, (&info.sender, &info.sender)) {
+    let visa = match VISAS.load(deps.storage, &info.sender) {
         Ok(v) => v,
         Err(_) => return Err(ContractError::NotOnList {}),
     };
@@ -101,26 +118,20 @@ pub fn set_sapient_names(
     Ok(Response::new().add_attribute("action", "set_sapient_names"))
 }
 
+/// Receive initial details and add to visa whitelist for later verification.
 pub fn preapprove_visa(
     visa_msg: PreapproveVisaMsg,
     deps: DepsMut,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    /*  We need to:
-        1. Check back with the cw721 contract to get the visa info based on token_id.
-        2. Confirm the user is under the sapience value or not on the excluded list.
-        3. Confirm the the user is not already on the visa list.
-        4. Add to the VISAS list as preapproved.
-
-        The visa will be approved once the the nft is sent over.
-    */
+    // The visa will be approved once the the nft is sent over.
 
     let visa = Visa {
         approved: false,
         details: visa_msg.details,
     };
 
-    VISAS.save(deps.storage, (&info.sender, &info.sender), &visa)?;
+    VISAS.save(deps.storage, &info.sender, &visa)?;
 
     Ok(Response::new().add_attribute("action", "preapprove_visa"))
 }
