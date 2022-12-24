@@ -1,0 +1,19 @@
+[package]
+name = "integration"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# for more explicit tests, cargo test --features=backtraces
+backtraces = ["cosmwasm-std/backtraces"]
+
+[dependencies]
+cosmwasm-std = { workspace = true }
+cw721-base = { workspace = true }
+cw721-visa = { workspace = true }
+cw-multi-test  = { workspace = true }
+portal = { workspace = true }
+universe = { workspace = true }

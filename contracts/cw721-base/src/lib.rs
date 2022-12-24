@@ -1,4 +1,3 @@
-mod contract_tests;
 mod error;
 mod execute;
 pub mod helpers;
@@ -7,6 +6,7 @@ pub mod msg;
 mod query;
 pub mod spec;
 pub mod state;
+mod tests;
 
 pub use crate::error::ContractError;
 pub use crate::msg::{ExecuteMsg, InstantiateMsg, MintMsg, MinterResponse, QueryMsg};
