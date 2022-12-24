@@ -31,7 +31,7 @@ pub fn execute(
         ExecuteMsg::SetMinimumSapience { to } => set_minimum_sapience(to, deps, info),
         ExecuteMsg::JumpRingTravel { to } => initiate_jump_ring_travel(to, deps, info),
         ExecuteMsg::ReceiveVisa { msg } => receive_visa(msg, deps, env, info),
-        ExecuteMsg::AssignVisa { visa } => assign_visa(visa, deps, info),
+        ExecuteMsg::AssignVisa { msg } => assign_visa(msg, deps, info),
     }
 }
 

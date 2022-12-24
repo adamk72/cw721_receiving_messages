@@ -12,6 +12,6 @@ pub enum ContractError {
     #[error("Not Approved")]
     Unapproved {},
 
-    #[error("Does not exist")]
+    #[error("Visa not on List")]
     NotOnList {},
 }

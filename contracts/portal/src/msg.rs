@@ -11,22 +11,24 @@ pub enum QueryMsg {
 }
 
 #[cw_serde]
-pub struct PreapproveVisaMsg {
-    pub details: VisaDetails,
+pub struct AssignVisaMsg {
+    pub details: VisaAdminDetails,
 }
 
 #[cw_serde]
-pub struct VisaDetails {
+pub struct VisaAdminDetails {
     pub ape: Addr,
+    /// The previous contract this is being sent from.
     pub contract: Addr,
     pub holder: Addr,
+    /// The token_id of the Visa to be approved later.
     pub token_id: String,
 }
 
 #[cw_serde]
 pub struct Visa {
     pub approved: bool,
-    pub details: VisaDetails,
+    pub details: VisaAdminDetails,
 }
 
 #[cw_serde]
@@ -36,7 +38,7 @@ pub enum ExecuteMsg {
     SetMinimumSapience { to: SapienceScale },
     JumpRingTravel { to: Addr },
     ReceiveVisa { msg: Cw721ReceiveMsg },
-    AssignVisa { visa: PreapproveVisaMsg },
+    AssignVisa { msg: AssignVisaMsg },
 }
 
 #[cw_serde]

@@ -1,6 +1,6 @@
 use crate::{
     error::ContractError,
-    msg::{PreapproveVisaMsg, Visa},
+    msg::{AssignVisaMsg, Visa},
     state::{CONFIG, VISAS},
 };
 use cosmwasm_std::{to_binary, Addr, DepsMut, Env, MessageInfo, QueryRequest, Response, WasmQuery};
@@ -32,15 +32,23 @@ pub fn receive_visa(
         4. Add to the VISAS list as preapproved.
     */
 
-    let query = WasmQuery::Smart {
-        contract_addr: info.sender.to_string(),
-        msg: to_binary(&Cw721QueryMsg::NftInfo {
-            token_id: msg.token_id.clone(),
-        })?,
-    };
+    // let query = WasmQuery::Smart {
+    //     contract_addr: info.sender.to_string(),
+    //     msg: to_binary(&Cw721QueryMsg::NftInfo {
+    //         token_id: msg.token_id.clone(),
+    //     })?,
+    // };
 
-    let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
-    println!("NftInfoResponse {:?}", res);
+    // let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
+    // println!("NftInfoResponse {:?}", res);
+
+    VISAS.update(deps.storage, &Addr::unchecked(msg.sender), |op| match op {
+        None => Err(ContractError::NotOnList {}),
+        Some(mut visa) => {
+            visa.approved = true;
+            Ok(visa)
+        }
+    })?;
 
     Ok(Response::new()
         .add_attribute("action", "receive_visa")
@@ -121,18 +129,18 @@ pub fn set_sapient_names(
 
 /// Receive initial details and add to visa whitelist for later verification.
 pub fn assign_visa(
-    visa_msg: PreapproveVisaMsg,
+    msg: AssignVisaMsg,
     deps: DepsMut,
-    info: MessageInfo,
+    _info: MessageInfo,
 ) -> Result<Response, ContractError> {
     // The visa will be approved once the the nft is sent over.
 
     let visa = Visa {
         approved: false,
-        details: visa_msg.details,
+        details: msg.details.clone(),
     };
 
-    VISAS.save(deps.storage, &info.sender, &visa)?;
+    VISAS.save(deps.storage, &msg.details.holder, &visa)?;
 
-    Ok(Response::new().add_attribute("action", "preapprove_visa"))
+    Ok(Response::new().add_attribute("action", "assign_visa"))
 }

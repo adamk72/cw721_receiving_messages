@@ -8,7 +8,7 @@ mod initiate_jump_ring_travel {
     use crate::{
         error::ContractError,
         execute_fns::initiate_jump_ring_travel,
-        msg::{Visa, VisaDetails},
+        msg::{Visa, VisaAdminDetails},
         state::VISAS,
     };
 
@@ -29,7 +29,7 @@ mod initiate_jump_ring_travel {
         let info = mock_info("zeus", &[]);
         let dest = Addr::unchecked("mars");
 
-        let details = VisaDetails {
+        let details = VisaAdminDetails {
             ape: Addr::unchecked("ape"),
             contract: Addr::unchecked("mars"),
             holder: Addr::unchecked("mars"),
