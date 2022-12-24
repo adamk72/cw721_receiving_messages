@@ -17,3 +17,5 @@ cw721-visa = { workspace = true }
 cw-multi-test  = { workspace = true }
 portal = { workspace = true }
 universe = { workspace = true }
+serde = { workspace = true }
+schemars = { workspace = true }

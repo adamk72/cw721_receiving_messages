@@ -36,7 +36,7 @@ pub enum ExecuteMsg {
     SetMinimumSapience { to: SapienceScale },
     JumpRingTravel { to: Addr },
     ReceiveVisa { msg: Cw721ReceiveMsg },
-    PreapproveVisa { visa: PreapproveVisaMsg },
+    AssignVisa { visa: PreapproveVisaMsg },
 }
 
 #[cw_serde]

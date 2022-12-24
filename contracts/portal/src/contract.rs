@@ -3,8 +3,8 @@ use cosmwasm_std::{Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult}
 
 use crate::error::ContractError;
 use crate::execute_fns::{
-    initiate_jump_ring_travel, preapprove_visa, receive_visa, set_minimum_sapience,
-    set_planet_name, set_sapient_names,
+    assign_visa, initiate_jump_ring_travel, receive_visa, set_minimum_sapience, set_planet_name,
+    set_sapient_names,
 };
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::query_fns::{jump_ring_check, minimum_sapience};
@@ -31,7 +31,7 @@ pub fn execute(
         ExecuteMsg::SetMinimumSapience { to } => set_minimum_sapience(to, deps, info),
         ExecuteMsg::JumpRingTravel { to } => initiate_jump_ring_travel(to, deps, info),
         ExecuteMsg::ReceiveVisa { msg } => receive_visa(msg, deps, env, info),
-        ExecuteMsg::PreapproveVisa { visa } => preapprove_visa(visa, deps, info),
+        ExecuteMsg::AssignVisa { visa } => assign_visa(visa, deps, info),
     }
 }
 

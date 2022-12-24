@@ -1,134 +1,113 @@
 #![cfg(test)]
-use cosmwasm_std::Empty;
+
+use cosmwasm_std::Event;
 use cosmwasm_std::{to_binary, Addr};
 use cw721_base::spec::Cw721ReceiveMsg;
-use cw721_visa::contract::{
-    execute as visa_execute, instantiate as visa_init, query as visa_query,
-    ExecuteMsg as CW721ExecuteMsg,
-};
+use cw721_base::MintMsg;
+use cw721_visa::contract::ExecuteMsg as CW721ExecuteMsg;
+use cw721_visa::metadata::VisaMetadata;
 use cw721_visa::msg::InstantiateMsg as CW721InstantiateMsg;
-use cw_multi_test::{App, Contract, ContractWrapper};
-use portal::contract::{execute, instantiate, query};
-
-fn mock_app() -> App {
-    App::default()
-}
-
-fn cw721_visa_contract() -> Box<dyn Contract<Empty>> {
-    let contract = ContractWrapper::new(visa_execute, visa_init, visa_query);
-    Box::new(contract)
-}
-
-fn portal_contract() -> Box<dyn Contract<Empty>> {
-    let contract = ContractWrapper::new(execute, instantiate, query);
-    Box::new(contract)
-}
-
-struct Names<'a> {
-    visa_sym: &'a str,
-    jr_owner: &'a str,
-    visa_holder: &'a str,
-    ape_minter: &'a str,
-}
-const NAMES: Names<'static> = Names {
-    visa_sym: "VISA_SYM",
-    jr_owner: "jr_owner",
-    visa_holder: "holder",
-    ape_minter: "ape_minter",
+use cw_multi_test::Executor;
+use integration::{
+    consts::{APE_MINTER, APE_OWNER, JR_OWNER, VISA_HOLDER, VISA_SYM},
+    contract_helpers::ContractBase,
+    contract_mocks::{JumpRingContract, VisaContract},
+    test_env::mock_app,
 };
+use portal::msg::{ExecuteMsg as PortalExecuteMsg, InstantiateMsg as PortalInitMsg};
+use universe::species::{SapienceScale, Sapient};
 
-mod receive_visa {
-    use cosmwasm_std::Event;
-    use cw721_base::MintMsg;
-    use cw721_visa::metadata::VisaMetadata;
-    use cw_multi_test::Executor;
-    use universe::species::{SapienceScale, Sapient};
+#[test]
+pub fn full_workflow() {
+    let sender_name = "venus";
+    let mut app = mock_app();
+    let p_code = app.store_code(JumpRingContract::contract_code());
+    let v_code = app.store_code(VisaContract::contract_code());
 
-    use super::*;
-    use portal::msg::{ExecuteMsg, InstantiateMsg};
+    let jr_init_msg = PortalInitMsg {
+        planet_name: "foobar".to_string(),
+        planet_sapients: vec![Sapient {}],
+        minimum_sapience: SapienceScale::Medium,
+    };
 
-    #[test]
-    pub fn can_receive() {
-        let sender_name = "venus";
-        let mut app = mock_app();
-        let jump_ring_box = portal_contract();
-        let cw721_visa_box = cw721_visa_contract();
-        let p_code = app.store_code(jump_ring_box);
-        let v_code = app.store_code(cw721_visa_box);
-
-        let jr_init_msg = InstantiateMsg {
-            planet_name: "foobar".to_string(),
-            planet_sapients: vec![Sapient {}],
-            minimum_sapience: SapienceScale::Medium,
-        };
-
-        let jump_ring_contract = app.instantiate_contract(
+    let jump_ring_addr = app
+        .instantiate_contract(
             p_code,
-            Addr::unchecked(NAMES.jr_owner),
+            Addr::unchecked(JR_OWNER),
             &jr_init_msg,
             &[],
-            NAMES.jr_owner,
+            JR_OWNER,
             None,
-        );
+        )
+        .unwrap();
 
-        let jr_addr = jump_ring_contract.unwrap();
-        let visa_init_msg = CW721InstantiateMsg {
-            apes: vec![Addr::unchecked(NAMES.ape_minter)],
-            name: NAMES.visa_holder.to_string(),
-            symbol: NAMES.visa_sym.to_string(),
-            jump_ring: jr_addr.clone(),
-        };
+    let jump_ring_contract = JumpRingContract(jump_ring_addr);
 
-        let visa_contract = app.instantiate_contract(
+    let visa_init_msg = CW721InstantiateMsg {
+        apes: vec![Addr::unchecked(APE_MINTER), Addr::unchecked(APE_OWNER)],
+        name: VISA_HOLDER.to_string(),
+        symbol: VISA_SYM.to_string(),
+        jump_ring: jump_ring_contract.addr(),
+    };
+
+    let visa_contract_addr = app
+        .instantiate_contract(
             v_code,
-            Addr::unchecked(NAMES.ape_minter),
+            Addr::unchecked(APE_OWNER),
             &visa_init_msg,
             &[],
-            NAMES.ape_minter,
+            APE_MINTER,
             None,
-        );
+        )
+        .unwrap();
+    let visa_contract = VisaContract(visa_contract_addr.clone());
 
-        /***** Actual testing *****/
-        // First, mint a token called "dakkadakka"
-        let token_id = "dakkadakka".to_string();
-        let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
+    /***** Actual testing *****/
+    // First, mint a token called "dakkadakka"
+    let token_id = "dakkadakka".to_string();
+    let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
 
-        let mint_msg: CW721ExecuteMsg = CW721ExecuteMsg::Mint(MintMsg::<Option<VisaMetadata>> {
-            token_id: Some(token_id.clone()),
-            owner: String::from(NAMES.ape_minter),
-            token_uri: Some(token_uri),
-            extension: Some(VisaMetadata {
-                name: Some(NAMES.visa_holder.to_string()),
-                image: None,
-                attributes: None,
-                origin: None,
-            }),
-        });
+    let mint_msg: CW721ExecuteMsg = CW721ExecuteMsg::Mint(MintMsg::<Option<VisaMetadata>> {
+        token_id: Some(token_id.clone()),
+        owner: String::from(APE_OWNER),
+        token_uri: Some(token_uri),
+        extension: Some(VisaMetadata {
+            name: Some(VISA_HOLDER.to_string()),
+            ..VisaMetadata::default()
+        }),
+    });
 
-        let visa_addr = visa_contract.unwrap();
-        app.execute_contract(
-            Addr::unchecked(NAMES.ape_minter),
-            visa_addr.clone(),
-            &mint_msg,
+    app.execute_contract(
+        Addr::unchecked(APE_MINTER),
+        visa_contract.addr(),
+        &mint_msg,
+        &[],
+    )
+    .unwrap();
+
+    // Send a Cw721ReceiveMsg
+    let msg = to_binary("You now have the melting power").unwrap();
+    let payload = Cw721ReceiveMsg {
+        sender: sender_name.to_string(),
+        token_id: token_id.clone(),
+        msg,
+    };
+
+    let rcv_msg = PortalExecuteMsg::ReceiveVisa { msg: payload };
+    let res = app
+        .execute_contract(
+            visa_contract.addr(),
+            jump_ring_contract.addr(),
+            &rcv_msg,
             &[],
         )
         .unwrap();
 
-        // Send a Cw721ReceiveMsg
-        let msg = to_binary("You now have the melting power").unwrap();
-        let payload = Cw721ReceiveMsg {
-            sender: sender_name.to_string(),
-            token_id: token_id.clone(),
-            msg,
-        };
+    println!("Result: {:?}", res);
 
-        let rcv_msg = ExecuteMsg::ReceiveVisa { msg: payload };
-        let res = app
-            .execute_contract(visa_addr.clone(), jr_addr.clone(), &rcv_msg, &[])
-            .unwrap();
-
-        res.assert_event(&Event::new("wasm").add_attribute("action", "receive_visa"));
-        res.assert_event(&Event::new("wasm").add_attribute("new_owner", jr_addr.to_string()));
-        res.assert_event(&Event::new("wasm").add_attribute("new_token_id", token_id.clone()));
-    }
+    res.assert_event(&Event::new("wasm").add_attribute("action", "receive_visa"));
+    res.assert_event(
+        &Event::new("wasm").add_attribute("new_owner", jump_ring_contract.addr().to_string()),
+    );
+    res.assert_event(&Event::new("wasm").add_attribute("new_token_id", token_id.clone()));
 }

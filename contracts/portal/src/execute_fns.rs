@@ -40,6 +40,7 @@ pub fn receive_visa(
     };
 
     let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
+    println!("NftInfoResponse {:?}", res);
 
     Ok(Response::new()
         .add_attribute("action", "receive_visa")
@@ -119,7 +120,7 @@ pub fn set_sapient_names(
 }
 
 /// Receive initial details and add to visa whitelist for later verification.
-pub fn preapprove_visa(
+pub fn assign_visa(
     visa_msg: PreapproveVisaMsg,
     deps: DepsMut,
     info: MessageInfo,
