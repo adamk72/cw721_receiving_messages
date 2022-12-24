@@ -25,6 +25,14 @@ impl SapienceScale {
             SapienceScale::High => "High",
         }
     }
+    pub fn as_value(&self) -> u8 {
+        match self {
+            SapienceScale::None => 0,
+            SapienceScale::Low => 1,
+            SapienceScale::Medium => 2,
+            SapienceScale::High => 3,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

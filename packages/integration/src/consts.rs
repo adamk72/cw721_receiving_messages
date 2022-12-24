@@ -9,3 +9,5 @@ pub const TOKEN_ID_1: &str = "token_id_1";
 pub const TOKEN_URI_1: &str = "token_uri_1";
 pub const BINARY_RCV_MSG: &str = "some arbitrary list of characters";
 pub const DESTINATION: &str = "some_destination_addr";
+pub const EXODITES: &str = "Exodites";
+pub const OTHER_ALIEN: &str = "Some other race";

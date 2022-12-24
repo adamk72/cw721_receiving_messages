@@ -1,12 +1,15 @@
 use crate::{
     error::ContractError,
     msg::{AssignVisaMsg, Visa},
+    query_fns::minimum_sapience,
     state::{CONFIG, VISAS},
 };
-use cosmwasm_std::{to_binary, Addr, DepsMut, Env, MessageInfo, QueryRequest, Response, WasmQuery};
+use cosmwasm_std::{
+    from_binary, to_binary, Addr, DepsMut, Env, MessageInfo, QueryRequest, Response, WasmQuery,
+};
 use cw721_base::spec::{Cw721QueryMsg, Cw721ReceiveMsg, NftInfoResponse};
 use cw721_visa::metadata::VisaMetadata;
-use universe::species::{SapienceScale, Sapient};
+use universe::species::{SapienceResponse, SapienceScale, Sapient};
 
 pub fn receive_visa(
     msg: Cw721ReceiveMsg,
@@ -14,33 +17,20 @@ pub fn receive_visa(
     env: Env,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
-    // let sender = deps.api.addr_validate(&owner)?;
-    // let visa = VISAS
-    //     .prefix(&sender)
-    //     .filter(|v| v == msg.token_id)
-    //     .collect();
-    /*  We need to check for the following:
-        1. That the owner-sender is on some sort of approved list.
-        2. That the token_id has been pre-vetted.
-        3. That the token_id and the sender match on the approved list.
-        4. That the token_id isn't already on the list.
+    let query = WasmQuery::Smart {
+        contract_addr: info.sender.to_string(),
+        msg: to_binary(&Cw721QueryMsg::NftInfo {
+            token_id: msg.token_id.clone(),
+        })?,
+    };
 
-        We need to:
-        1. Check back with the cw721 contract to get the visa info based on token_id.
-        2. Confirm the user is under the sapience value or not on the excluded list.
-        3. Confirm the the user is not already on the visa list.
-        4. Add to the VISAS list as preapproved.
-    */
-
-    // let query = WasmQuery::Smart {
-    //     contract_addr: info.sender.to_string(),
-    //     msg: to_binary(&Cw721QueryMsg::NftInfo {
-    //         token_id: msg.token_id.clone(),
-    //     })?,
-    // };
-
-    // let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
-    // println!("NftInfoResponse {:?}", res);
+    let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
+    let incoming_sapience = res.clone().extension.species.unwrap().sapience_level;
+    let contract_min_sapience: SapienceResponse =
+        from_binary(&minimum_sapience(deps.as_ref()).unwrap()).unwrap();
+    if incoming_sapience.as_value() < contract_min_sapience.level.as_value() {
+        return Err(ContractError::NotSmartEnough {});
+    }
 
     VISAS.update(deps.storage, &Addr::unchecked(msg.sender), |op| match op {
         None => Err(ContractError::NotOnList {}),

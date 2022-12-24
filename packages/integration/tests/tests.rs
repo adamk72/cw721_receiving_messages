@@ -9,7 +9,7 @@ use cw721_visa::metadata::VisaMetadata;
 use cw721_visa::msg::InstantiateMsg as CW721InstantiateMsg;
 use cw_multi_test::Executor;
 use integration::consts::{
-    APE_ADMIN, BINARY_RCV_MSG, DESTINATION, TOKEN_ID_1, TOKEN_URI_1, VISA_HOLDER_ACCT,
+    APE_ADMIN, BINARY_RCV_MSG, DESTINATION, OTHER_ALIEN, TOKEN_ID_1, TOKEN_URI_1, VISA_HOLDER_ACCT,
 };
 use integration::test_env::get_species_by_level;
 use integration::{
@@ -85,7 +85,7 @@ pub fn visa_is_approved() {
         extension: Some(VisaMetadata {
             account: Some(Addr::unchecked(VISA_HOLDER_ACCT)),
             name: Some(VISA_HOLDER_NAME.to_string()),
-            species: Some(get_species_by_level(SapienceScale::High)),
+            species: Some(get_species_by_level(OTHER_ALIEN, SapienceScale::High)),
             ..VisaMetadata::default()
         }),
     });
