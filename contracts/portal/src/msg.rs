@@ -37,7 +37,7 @@ pub enum ExecuteMsg {
     SetSapientNames { to: Vec<Sapient> },
     SetMinimumSapience { to: SapienceScale },
     JumpRingTravel { to: Addr },
-    ReceiveVisa { msg: Cw721ReceiveMsg },
+    ReceiveNft { msg: Cw721ReceiveMsg },
     AssignVisa { msg: AssignVisaMsg },
 }
 

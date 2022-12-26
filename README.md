@@ -42,7 +42,7 @@ This will require two contracts:
       - ✅ Name for completeness;
       - ✅ Account addy for later validation;
       - Image, i.e., their passport photo for later facial recognition;
-      - ✅ `Species` for the approval process at `ReceiveVisa`;
+      - ✅ `Species` for the approval process at `ReceiveNft`;
       - Planet of origin (later on may include logic to prevent re-use of Visa);
       - Key/Value attributes (for later use in a dapp);
       - DNA string (for later use in a dapp).
