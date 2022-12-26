@@ -6,7 +6,6 @@ use crate::{
 use cosmwasm_std::Empty;
 use cw2::set_contract_version;
 pub use cw721_base::InstantiateMsg as Cw721BaseInstantiateMsg;
-pub type Cw721NonTransferableContract<'a> = Cw721Contract<'a, Extension, Empty, Empty, Empty>;
 
 // Version info for migration
 const CONTRACT_NAME: &str = "cw721-visa";
@@ -14,7 +13,7 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub type Extension = Option<VisaMetadata>;
 
-pub type Cw721VisaContract<'a> = cw721_base::Cw721Contract<'a, Extension, Empty, Empty, Empty>;
+pub type Cw721VisaContract<'a> = Cw721Contract<'a, Extension, Empty, Empty, Empty>;
 pub type ExecuteMsg = cw721_base::ExecuteMsg<Extension, Empty>;
 pub type QueryMsg = cw721_base::QueryMsg<Empty>;
 
@@ -30,9 +29,6 @@ pub fn instantiate(
     info: MessageInfo,
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
-    set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)
-        .map_err(ContractError::Std)?;
-
     let config = Config {
         jump_ring: msg.jump_ring,
         apes: msg.apes.clone(),
@@ -46,12 +42,15 @@ pub fn instantiate(
 
     // @todo: other apes become "approves?"
 
-    Cw721NonTransferableContract::default().instantiate(
+    Cw721VisaContract::default().instantiate(
         deps.branch(),
         env,
         info,
         cw721_base_instantiate_msg,
     )?;
+
+    set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)
+        .map_err(ContractError::Std)?;
 
     CONFIG.save(deps.storage, &config)?;
 
