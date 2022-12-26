@@ -12,6 +12,10 @@ repository    = { workspace = true }
 homepage      = { workspace = true }
 documentation = { workspace = true }
 
+[[bin]]
+name = "example"
+path = "examples/schema-cw721-base.rs"
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 doctest = false

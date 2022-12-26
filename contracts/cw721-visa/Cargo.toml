@@ -22,6 +22,10 @@ backtraces = ["cosmwasm-std/backtraces"]
 # use library feature to disable all instantiate/execute/query exports
 library = []
 
+[[bin]]
+name = "cw721-visa"
+path = "examples/schema-cw721-visa.rs"
+
 [dependencies]
 cosmwasm-schema = { workspace = true }
 cosmwasm-std    = { workspace = true }

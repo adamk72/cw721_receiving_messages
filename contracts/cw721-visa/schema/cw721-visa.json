@@ -1,5 +1,5 @@
 {
-  "contract_name": "cw721-metadata-onchain",
+  "contract_name": "cw721-visa",
   "contract_version": "0.16.0",
   "idl_version": "1.0.0",
   "instantiate": {
@@ -7,25 +7,35 @@
     "title": "InstantiateMsg",
     "type": "object",
     "required": [
-      "minter",
+      "apes",
+      "jump_ring",
       "name",
       "symbol"
     ],
     "properties": {
-      "minter": {
-        "description": "The minter is the only one who can create new NFTs. This is designed for a base NFT that is controlled by an external program or contract. You will likely replace this with custom logic in custom NFTs",
-        "type": "string"
+      "apes": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Addr"
+        }
+      },
+      "jump_ring": {
+        "$ref": "#/definitions/Addr"
       },
       "name": {
-        "description": "Name of the NFT contract",
         "type": "string"
       },
       "symbol": {
-        "description": "Symbol of the NFT contract",
         "type": "string"
       }
     },
-    "additionalProperties": false
+    "additionalProperties": false,
+    "definitions": {
+      "Addr": {
+        "description": "A human readable address.\n\nIn Cosmos, this is typically bech32 encoded. But for multi-chain smart contracts no assumptions should be made other than being UTF-8 encoded and of reasonable length.\n\nThis type represents a validated address. It can be created in the following ways 1. Use `Addr::unchecked(input)` 2. Use `let checked: Addr = deps.api.addr_validate(input)?` 3. Use `let checked: Addr = deps.api.addr_humanize(canonical_addr)?` 4. Deserialize from JSON. This must only be done from JSON that was validated before such as a contract's state. `Addr` must not be used in messages sent by the user because this would result in unvalidated instances.\n\nThis type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.",
+        "type": "string"
+      }
+    }
   },
   "execute": {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -212,7 +222,7 @@
         ],
         "properties": {
           "mint": {
-            "$ref": "#/definitions/MintMsg_for_Nullable_Metadata"
+            "$ref": "#/definitions/MintMsg_for_Nullable_VisaMetadata"
           }
         },
         "additionalProperties": false
@@ -263,6 +273,10 @@
       }
     ],
     "definitions": {
+      "Addr": {
+        "description": "A human readable address.\n\nIn Cosmos, this is typically bech32 encoded. But for multi-chain smart contracts no assumptions should be made other than being UTF-8 encoded and of reasonable length.\n\nThis type represents a validated address. It can be created in the following ways 1. Use `Addr::unchecked(input)` 2. Use `let checked: Addr = deps.api.addr_validate(input)?` 3. Use `let checked: Addr = deps.api.addr_humanize(canonical_addr)?` 4. Deserialize from JSON. This must only be done from JSON that was validated before such as a contract's state. `Addr` must not be used in messages sent by the user because this would result in unvalidated instances.\n\nThis type is immutable. If you really need to mutate it (Really? Are you sure?), create a mutable copy using `let mut mutable = Addr::to_string()` and operate on that `String` instance.",
+        "type": "string"
+      },
       "Binary": {
         "description": "Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.\n\nThis is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>. See also <https://github.com/CosmWasm/cosmwasm/blob/main/docs/MESSAGE_TYPES.md>.",
         "type": "string"
@@ -318,70 +332,7 @@
           }
         ]
       },
-      "Metadata": {
-        "type": "object",
-        "properties": {
-          "animation_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "attributes": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/definitions/Trait"
-            }
-          },
-          "background_color": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "description": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "external_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "image": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "image_data": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "name": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "youtube_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        },
-        "additionalProperties": false
-      },
-      "MintMsg_for_Nullable_Metadata": {
+      "MintMsg_for_Nullable_VisaMetadata": {
         "type": "object",
         "required": [
           "owner",
@@ -392,7 +343,7 @@
             "description": "Any custom extension used by this contract",
             "anyOf": [
               {
-                "$ref": "#/definitions/Metadata"
+                "$ref": "#/definitions/VisaMetadata"
               },
               {
                 "type": "null"
@@ -416,6 +367,30 @@
           }
         },
         "additionalProperties": false
+      },
+      "SapienceScale": {
+        "type": "string",
+        "enum": [
+          "None",
+          "Low",
+          "Medium",
+          "High"
+        ]
+      },
+      "Species": {
+        "type": "object",
+        "required": [
+          "name",
+          "sapience_level"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sapience_level": {
+            "$ref": "#/definitions/SapienceScale"
+          }
+        }
       },
       "Timestamp": {
         "description": "A point in time in nanosecond precision.\n\nThis type can represent times from 1970-01-01T00:00:00Z to 2554-07-21T23:34:33Z.\n\n## Examples\n\n``` # use cosmwasm_std::Timestamp; let ts = Timestamp::from_nanos(1_000_000_202); assert_eq!(ts.nanos(), 1_000_000_202); assert_eq!(ts.seconds(), 1); assert_eq!(ts.subsec_nanos(), 202);\n\nlet ts = ts.plus_seconds(2); assert_eq!(ts.nanos(), 3_000_000_202); assert_eq!(ts.seconds(), 3); assert_eq!(ts.subsec_nanos(), 202); ```",
@@ -450,6 +425,69 @@
       "Uint64": {
         "description": "A thin wrapper around u64 that is using strings for JSON encoding/decoding, such that the full u64 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.\n\n# Examples\n\nUse `from` to create instances of this and `u64` to get the value out:\n\n``` # use cosmwasm_std::Uint64; let a = Uint64::from(42u64); assert_eq!(a.u64(), 42);\n\nlet b = Uint64::from(70u32); assert_eq!(b.u64(), 70); ```",
         "type": "string"
+      },
+      "VisaMetadata": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Addr"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attributes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/definitions/Trait"
+            }
+          },
+          "dna": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Addr"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "species": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Species"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
       }
     }
   },
