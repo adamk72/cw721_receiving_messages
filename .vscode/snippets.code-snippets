@@ -1,0 +1,50 @@
+{
+	// Place your cryptonauts-lessons workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"CosmWasm exercise": {
+		"prefix": ["cosm", "exercise"],
+		"body" :["---\nmain file: ${1:one file name}\nsupporting files: ${2:comma separated list}\ncosmwasm topics:\nrust topics:\n---\n\n# Overview\n$0\n\n# Exercise\n\n# Starter\n```rust\n\n```\n\n# Answer\n```rust\n\n```"],
+		"description": "Framework for CosmWasm exercise"
+	},
+	"Support Files": {
+		"prefix": ["support"],
+		"body" :["---\nmain file: ${1:one file name}\nsupporting files: n/a\n---\n\n**This is a support file only**\n\n# Answer\n```rust\n$0\n```"],
+		"description": "Support only files"
+	},
+	"Help Files": {
+		"prefix": ["help"],
+		"body" :["---\napplies to: $0\n---\n\n**This is a help file only**\n\n# Answer\n$0"],
+		"description": "Help only files"
+	},
+	"Rust markdown code block": {
+		"prefix": ["rust"], 
+		"body": ["```rust\n$0\n```"],
+	},
+	"Lesson Title": {
+		"prefix": ["lesson"],
+		"body": ["## Lesson #$0"]
+	},
+	"An aside": {
+		"prefix": ["aside"],
+		"body": ["> ## ${1:title}\n> $0"]
+	},
+	"Summary": {
+		"prefix": ["summary"],
+		"body": ["---\nmain file: contract.rs\nsupporting files: all\n---\n\n# Overview\n## Summary\n${0:Write summary here}\n\nIn general, we learned about:\n\nFrom the `cosmwasm` libraries, we touched on:\n\n## Next Up\n\n<!-- This should be the contract file -->\n# Answer\n```rust\n\n```"]
+	}
+}
