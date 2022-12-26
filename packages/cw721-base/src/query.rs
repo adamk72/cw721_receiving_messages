@@ -5,7 +5,7 @@ use cosmwasm_std::{
     to_binary, Addr, Binary, BlockInfo, CustomMsg, Deps, Env, Order, StdError, StdResult,
 };
 
-use crate::spec::{
+use cw721::{
     AllNftInfoResponse, ApprovalResponse, ApprovalsResponse, ContractInfoResponse, Cw721Query,
     Expiration, NftInfoResponse, NumTokensResponse, OperatorsResponse, OwnerOfResponse,
     TokensResponse,
@@ -97,7 +97,7 @@ where
 
         // token owner has absolute approval
         if token.owner == spender {
-            let approval = crate::spec::Approval {
+            let approval = cw721::Approval {
                 spender: token.owner.to_string(),
                 expires: Expiration::Never {},
             };
@@ -109,7 +109,7 @@ where
             .into_iter()
             .filter(|t| t.spender == spender)
             .filter(|t| include_expired || !t.is_expired(&env.block))
-            .map(|a| crate::spec::Approval {
+            .map(|a| cw721::Approval {
                 spender: a.spender.into_string(),
                 expires: a.expires,
             })
@@ -137,7 +137,7 @@ where
             .approvals
             .into_iter()
             .filter(|t| include_expired || !t.is_expired(&env.block))
-            .map(|a| crate::spec::Approval {
+            .map(|a| cw721::Approval {
                 spender: a.spender.into_string(),
                 expires: a.expires,
             })
@@ -287,8 +287,8 @@ where
     }
 }
 
-fn parse_approval(item: StdResult<(Addr, Expiration)>) -> StdResult<crate::spec::Approval> {
-    item.map(|(spender, expires)| crate::spec::Approval {
+fn parse_approval(item: StdResult<(Addr, Expiration)>) -> StdResult<cw721::Approval> {
+    item.map(|(spender, expires)| cw721::Approval {
         spender: spender.to_string(),
         expires,
     })
@@ -298,7 +298,7 @@ fn humanize_approvals<T>(
     block: &BlockInfo,
     info: &TokenInfo<T>,
     include_expired: bool,
-) -> Vec<crate::spec::Approval> {
+) -> Vec<cw721::Approval> {
     info.approvals
         .iter()
         .filter(|apr| include_expired || !apr.is_expired(block))
@@ -306,8 +306,8 @@ fn humanize_approvals<T>(
         .collect()
 }
 
-fn humanize_approval(approval: &Approval) -> crate::spec::Approval {
-    crate::spec::Approval {
+fn humanize_approval(approval: &Approval) -> cw721::Approval {
+    cw721::Approval {
         spender: approval.spender.to_string(),
         expires: approval.expires,
     }

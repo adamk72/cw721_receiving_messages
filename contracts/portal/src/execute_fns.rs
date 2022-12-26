@@ -7,7 +7,7 @@ use crate::{
 use cosmwasm_std::{
     from_binary, to_binary, Addr, DepsMut, Env, MessageInfo, QueryRequest, Response, WasmQuery,
 };
-use cw721_base::spec::{Cw721QueryMsg, Cw721ReceiveMsg, NftInfoResponse};
+use cw721::{Cw721QueryMsg, Cw721ReceiveMsg, NftInfoResponse};
 use cw721_visa::metadata::VisaMetadata;
 use universe::species::{SapienceResponse, SapienceScale, Sapient};
 

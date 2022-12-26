@@ -1,6 +1,6 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Addr;
-use cw721_base::spec::Cw721ReceiveMsg;
+use cw721::Cw721ReceiveMsg;
 use serde::{Deserialize, Serialize};
 use universe::species::{SapienceScale, Sapient, Traveler};
 

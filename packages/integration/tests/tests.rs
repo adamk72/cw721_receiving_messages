@@ -2,7 +2,7 @@
 
 use cosmwasm_std::Event;
 use cosmwasm_std::{to_binary, Addr};
-use cw721_base::spec::Cw721ReceiveMsg;
+use cw721::Cw721ReceiveMsg;
 use cw721_base::MintMsg;
 use cw721_visa::contract::ExecuteMsg as CW721ExecuteMsg;
 use cw721_visa::metadata::VisaMetadata;
@@ -79,7 +79,7 @@ pub fn visa_is_approved() {
     let token_uri = TOKEN_URI_1.to_string();
 
     let mint_msg: CW721ExecuteMsg = CW721ExecuteMsg::Mint(MintMsg::<Option<VisaMetadata>> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: String::from(APE_CONTRACT_OWNER),
         token_uri: Some(token_uri),
         extension: Some(VisaMetadata {

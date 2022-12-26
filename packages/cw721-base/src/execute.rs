@@ -3,8 +3,8 @@ use serde::Serialize;
 
 use cosmwasm_std::{Binary, CustomMsg, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 
-use crate::spec::{ContractInfoResponse, Cw721Execute, Cw721ReceiveMsg, Expiration};
 use cw2::set_contract_version;
+use cw721::{ContractInfoResponse, Cw721Execute, Cw721ReceiveMsg, Expiration};
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MintMsg};
@@ -13,7 +13,6 @@ use crate::state::{Approval, Cw721Contract, TokenInfo};
 // Version info for migration
 const CONTRACT_NAME: &str = "crates.io:cw721-base";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
-const TOKEN_PREFIX: &str = "foo2dabar";
 
 impl<'a, T, C, E, Q> Cw721Contract<'a, T, C, E, Q>
 where
@@ -50,7 +49,6 @@ where
     ) -> Result<Response<C>, ContractError> {
         match msg {
             ExecuteMsg::Mint(msg) => self.mint(deps, env, info, msg),
-            ExecuteMsg::ReceiveNft { msg } => self.receive_nft(deps, env, info, msg),
             ExecuteMsg::Approve {
                 spender,
                 token_id,
@@ -99,33 +97,26 @@ where
             return Err(ContractError::Unauthorized {});
         }
 
-        let token_id = self._mint(deps, msg.clone())?;
+        // create the token
+        let token = TokenInfo {
+            owner: deps.api.addr_validate(&msg.owner)?,
+            approvals: vec![],
+            token_uri: msg.token_uri,
+            extension: msg.extension,
+        };
+        self.tokens
+            .update(deps.storage, &msg.token_id, |old| match old {
+                Some(_) => Err(ContractError::Claimed {}),
+                None => Ok(token),
+            })?;
+
+        self.increment_tokens(deps.storage)?;
 
         Ok(Response::new()
             .add_attribute("action", "mint")
             .add_attribute("minter", info.sender)
             .add_attribute("owner", msg.owner)
-            .add_attribute("token_id", token_id))
-    }
-
-    fn receive_nft(
-        &self,
-        _deps: DepsMut,
-        env: Env,
-        _info: MessageInfo,
-        msg: Cw721ReceiveMsg,
-    ) -> Result<Response<C>, ContractError> {
-        // Some details from: https://medium.com/obi-money/how-to-code-multi-contract-interactions-interwasm-dev-2-767ef1e24373
-        // verify_authorized_nft_contract(deps.storage, &info.sender)?;
-
-        // self._transfer_nft(deps, &env, &info, &msg.sender, &msg.token_id)?;
-        // let incoming_nft_id = msg.token_id;
-        // let previous_owner = msg.sender;
-
-        Ok(Response::new()
-            .add_attribute("action", "receive_nft")
-            .add_attribute("new_owner", env.contract.address)
-            .add_attribute("new_token_id", msg.token_id))
+            .add_attribute("token_id", msg.token_id))
     }
 }
 
@@ -287,33 +278,6 @@ where
     E: CustomMsg,
     Q: CustomMsg,
 {
-    pub fn _mint(&self, deps: DepsMut, msg: MintMsg<T>) -> Result<String, ContractError> {
-        // create the token
-        let token = TokenInfo {
-            owner: deps.api.addr_validate(&msg.owner)?,
-            approvals: vec![],
-            token_uri: msg.token_uri,
-            extension: msg.extension,
-        };
-
-        let token_id = msg
-            .token_id
-            .unwrap_or_else(|| match self.token_count(deps.storage) {
-                Ok(val) => format!("{}{}", TOKEN_PREFIX, val),
-                Err(e) => panic!("Token count error: {:?}", e), // @TODO: adamk: there's certainly a better way to handle this; I'm just not sure what that is. Why would token_count not be initialized at this point?
-            });
-
-        self.tokens
-            .update(deps.storage, &token_id, |old| match old {
-                Some(_) => Err(ContractError::Claimed {}),
-                None => Ok(token),
-            })?;
-
-        self.increment_tokens(deps.storage)?;
-
-        Ok(token_id)
-    }
-
     pub fn _transfer_nft(
         &self,
         deps: DepsMut,

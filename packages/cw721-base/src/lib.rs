@@ -1,21 +1,18 @@
+mod contract_tests;
 mod error;
 mod execute;
 pub mod helpers;
-pub mod metadata;
 pub mod msg;
 mod query;
-pub mod spec;
 pub mod state;
-mod tests;
 
 pub use crate::error::ContractError;
 pub use crate::msg::{ExecuteMsg, InstantiateMsg, MintMsg, MinterResponse, QueryMsg};
 pub use crate::state::Cw721Contract;
 use cosmwasm_std::Empty;
-pub use metadata::OpenMetadata;
 
 // This is a simple type to let us handle empty extensions
-pub type Extension = Option<OpenMetadata>;
+pub type Extension = Option<Empty>;
 
 pub mod entry {
     use super::*;

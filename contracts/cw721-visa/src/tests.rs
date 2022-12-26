@@ -9,7 +9,8 @@ use cosmwasm_std::{
     testing::{mock_dependencies, mock_env, mock_info},
     Addr, Response,
 };
-use cw721_base::{spec::Cw721Query, MintMsg, MinterResponse};
+use cw721::Cw721Query;
+use cw721_base::{MintMsg, MinterResponse};
 
 const CREATOR: &str = "creator";
 
@@ -31,7 +32,7 @@ fn use_metadata_extension() {
 
     let token_id = "Enterprise";
     let mint_msg = MintMsg {
-        token_id: Some(token_id.to_string()),
+        token_id: token_id.to_string(),
         owner: "john".to_string(),
         token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
         extension: Some(VisaMetadata {

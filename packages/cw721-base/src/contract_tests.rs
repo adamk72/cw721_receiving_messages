@@ -1,19 +1,15 @@
 #![cfg(test)]
-use crate::entry::{execute, instantiate, query};
-use crate::spec::{
+use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+use cosmwasm_std::{from_binary, to_binary, CosmosMsg, DepsMut, Empty, Response, WasmMsg};
+
+use cw721::{
     Approval, ApprovalResponse, ContractInfoResponse, Cw721Query, Cw721ReceiveMsg, Expiration,
     NftInfoResponse, OperatorsResponse, OwnerOfResponse,
 };
-use crate::{
-    ContractError, Cw721Contract, ExecuteMsg, Extension, InstantiateMsg, MintMsg, OpenMetadata,
-    QueryMsg,
-};
-use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
-use cosmwasm_std::{
-    from_binary, to_binary, Addr, CosmosMsg, DepsMut, Empty, Event, Response, WasmMsg,
-};
 
-use cw_multi_test::{App, Contract, ContractWrapper, Executor};
+use crate::{
+    ContractError, Cw721Contract, ExecuteMsg, Extension, InstantiateMsg, MintMsg, QueryMsg,
+};
 
 const MINTER: &str = "merlin";
 const CONTRACT_NAME: &str = "Magic Power";
@@ -76,11 +72,10 @@ fn minting() {
     let contract = setup_contract(deps.as_mut());
 
     let token_id = "petrify".to_string();
-    let token_id2 = "extension".to_string();
     let token_uri = "https://www.merriam-webster.com/dictionary/petrify".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: String::from("medusa"),
         token_uri: Some(token_uri.clone()),
         extension: None,
@@ -96,7 +91,7 @@ fn minting() {
     // minter can mint
     let allowed = mock_info(MINTER, &[]);
     let _ = contract
-        .execute(deps.as_mut(), mock_env(), allowed.clone(), mint_msg)
+        .execute(deps.as_mut(), mock_env(), allowed, mint_msg)
         .unwrap();
 
     // ensure num tokens increases
@@ -132,7 +127,7 @@ fn minting() {
 
     // Cannot mint same token_id again
     let mint_msg2 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: String::from("hercules"),
         token_uri: None,
         extension: None,
@@ -140,56 +135,14 @@ fn minting() {
 
     let allowed = mock_info(MINTER, &[]);
     let err = contract
-        .execute(deps.as_mut(), mock_env(), allowed.clone(), mint_msg2)
+        .execute(deps.as_mut(), mock_env(), allowed, mint_msg2)
         .unwrap_err();
     assert_eq!(err, ContractError::Claimed {});
 
     // list the token_ids
     let tokens = contract.all_tokens(deps.as_ref(), None, None).unwrap();
     assert_eq!(1, tokens.tokens.len());
-    assert_eq!(vec![token_id.clone()], tokens.tokens);
-
-    // with Extension
-
-    let token_uri2 = "https://starships.example.com/Starship/Enterprise.json".to_string();
-    let mint_msg3 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id2.clone()),
-        owner: "mercury".to_string(),
-        token_uri: Some(token_uri2.clone().into()),
-        extension: Some(OpenMetadata {
-            description: Some("Spaceship with Warp Drive".into()),
-            name: Some("Starship USS Enterprise".to_string()),
-            ..OpenMetadata::default()
-        }),
-    });
-    contract
-        .execute(deps.as_mut(), mock_env(), allowed.clone(), mint_msg3)
-        .unwrap();
-    let res = contract.nft_info(deps.as_ref(), token_id2.into()).unwrap();
-    assert_eq!(res.token_uri.unwrap(), token_uri2);
-    assert_eq!(
-        res.extension.unwrap(),
-        OpenMetadata {
-            description: Some("Spaceship with Warp Drive".into()),
-            name: Some("Starship USS Enterprise".to_string()),
-            ..OpenMetadata::default()
-        }
-    );
-
-    // Token ID is not supplied
-    let mint_msg4 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: None,
-        owner: String::from("hercules"),
-        token_uri: None,
-        extension: None,
-    });
-    contract
-        .execute(deps.as_mut(), mock_env(), allowed, mint_msg4)
-        .unwrap();
-
-    // Double check the new token actually got added.
-    let tokens = contract.all_tokens(deps.as_ref(), None, None).unwrap();
-    assert_eq!(3, tokens.tokens.len());
+    assert_eq!(vec![token_id], tokens.tokens);
 }
 
 #[test]
@@ -201,7 +154,7 @@ fn burning() {
     let token_uri = "https://www.merriam-webster.com/dictionary/petrify".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: MINTER.to_string(),
         token_uri: Some(token_uri),
         extension: None,
@@ -251,7 +204,7 @@ fn transferring_nft() {
     let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: String::from("venus"),
         token_uri: Some(token_uri),
         extension: None,
@@ -299,12 +252,13 @@ fn transferring_nft() {
 fn sending_nft() {
     let mut deps = mock_dependencies();
     let contract = setup_contract(deps.as_mut());
+
     // Mint a token
     let token_id = "melt".to_string();
     let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: String::from("venus"),
         token_uri: Some(token_uri),
         extension: None,
@@ -348,7 +302,6 @@ fn sending_nft() {
         }
         m => panic!("Unexpected message type: {:?}", m),
     }
-
     // and make sure this is the request sent by the contract
     assert_eq!(
         res,
@@ -362,114 +315,6 @@ fn sending_nft() {
 }
 
 #[test]
-fn send_and_receive_nft() {
-    let alpha_owner = Addr::unchecked("venus");
-    let omega_owner = Addr::unchecked("mars");
-    let token_owner = Addr::unchecked("hercules");
-
-    /***** Setup *****/
-    // Alpha App and contract
-    let mut app = App::default();
-    let msg = InstantiateMsg {
-        name: "Alpha".to_string(),
-        symbol: SYMBOL.to_string(),
-        minter: String::from(MINTER),
-    };
-
-    pub fn alpha_contract_box() -> Box<dyn Contract<Empty>> {
-        let contract = ContractWrapper::new(execute, instantiate, query);
-        Box::new(contract)
-    }
-    let code = app.store_code(alpha_contract_box());
-    let alpha_contract = app
-        .instantiate_contract(code, alpha_owner.clone(), &msg, &[], "Echo", None)
-        .unwrap();
-
-    let msg = InstantiateMsg {
-        name: "Omega".to_string(),
-        symbol: SYMBOL.to_string(),
-        minter: String::from(MINTER),
-    };
-    pub fn omega_contract_box() -> Box<dyn Contract<Empty>> {
-        let contract = ContractWrapper::new(execute, instantiate, query);
-        Box::new(contract)
-    }
-    let code = app.store_code(omega_contract_box());
-    let omega_contract = app
-        .instantiate_contract(code, omega_owner.clone(), &msg, &[], "Echo", None)
-        .unwrap();
-
-    /***** Actual testing *****/
-    // First, mint a token called "dakkadakka"
-    let token_id = "dakkadakka".to_string();
-    let token_uri = "https://www.merriam-webster.com/dictionary/melt".to_string();
-
-    let mint_msg: ExecuteMsg<Option<OpenMetadata>, Empty> =
-        ExecuteMsg::Mint(MintMsg::<Extension> {
-            token_id: Some(token_id.clone()),
-            owner: String::from(&token_owner),
-            token_uri: Some(token_uri),
-            extension: None,
-        });
-
-    app.execute_contract(
-        Addr::unchecked(MINTER),
-        alpha_contract.clone(),
-        &mint_msg,
-        &[],
-    )
-    .unwrap();
-
-    // Now we have the dakkadakka token, so send to the same contract
-    let msg = to_binary("Mars needs Venus").unwrap();
-
-    // Send the nft to the omega_contract
-    let send_msg: ExecuteMsg<Option<Empty>, Empty> = ExecuteMsg::SendNft {
-        contract: String::from(&omega_contract),
-        token_id: token_id.clone(),
-        msg: msg.clone(),
-    };
-
-    let res = app
-        .execute_contract(token_owner.clone(), alpha_contract.clone(), &send_msg, &[])
-        .unwrap();
-
-    res.assert_event(&Event::new("wasm").add_attribute("action", "receive_nft"));
-    res.assert_event(&Event::new("wasm").add_attribute("new_owner", String::from(&omega_contract)));
-    res.assert_event(&Event::new("wasm").add_attribute("new_token_id", token_id.clone()));
-}
-
-#[test]
-fn receive_nft() {
-    let sender_name = "venus";
-    let mut deps = mock_dependencies();
-    let contract = setup_contract(deps.as_mut());
-
-    let token_id = "dakkadakka".to_string();
-
-    let sender = mock_info(sender_name, &[]);
-    let msg = to_binary("You now have the melting power").unwrap();
-
-    let payload = Cw721ReceiveMsg {
-        sender: String::from(sender_name),
-        token_id: token_id.clone(),
-        msg,
-    };
-
-    let rcv_msg = ExecuteMsg::ReceiveNft { msg: payload };
-    let res = contract
-        .execute(deps.as_mut(), mock_env(), sender, rcv_msg)
-        .unwrap();
-
-    assert_eq!(
-        res,
-        Response::new()
-            .add_attribute("action", "receive_nft")
-            .add_attribute("new_owner", MOCK_CONTRACT_ADDR)
-            .add_attribute("new_token_id", token_id)
-    );
-}
-#[test]
 fn approving_revoking() {
     let mut deps = mock_dependencies();
     let contract = setup_contract(deps.as_mut());
@@ -479,7 +324,7 @@ fn approving_revoking() {
     let token_uri = "https://www.merriam-webster.com/dictionary/grow".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id.clone()),
+        token_id: token_id.clone(),
         owner: String::from("demeter"),
         token_uri: Some(token_uri),
         extension: None,
@@ -626,7 +471,7 @@ fn approving_all_revoking_all() {
     let token_uri2 = "https://www.merriam-webster.com/dictionary/grow2".to_string();
 
     let mint_msg1 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id1.clone()),
+        token_id: token_id1.clone(),
         owner: String::from("demeter"),
         token_uri: Some(token_uri1),
         extension: None,
@@ -638,7 +483,7 @@ fn approving_all_revoking_all() {
         .unwrap();
 
     let mint_msg2 = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id2.clone()),
+        token_id: token_id2.clone(),
         owner: String::from("demeter"),
         token_uri: Some(token_uri2),
         extension: None,
@@ -726,7 +571,7 @@ fn approving_all_revoking_all() {
     assert_eq!(
         res,
         OperatorsResponse {
-            operators: vec![crate::spec::Approval {
+            operators: vec![cw721::Approval {
                 spender: String::from("operator"),
                 expires: Expiration::Never {}
             }]
@@ -758,7 +603,7 @@ fn approving_all_revoking_all() {
     assert_eq!(
         res,
         OperatorsResponse {
-            operators: vec![crate::spec::Approval {
+            operators: vec![cw721::Approval {
                 spender: String::from("buddy"),
                 expires: buddy_expires,
             }]
@@ -777,7 +622,7 @@ fn approving_all_revoking_all() {
     assert_eq!(
         res,
         OperatorsResponse {
-            operators: vec![crate::spec::Approval {
+            operators: vec![cw721::Approval {
                 spender: String::from("operator"),
                 expires: Expiration::Never {}
             }]
@@ -805,7 +650,7 @@ fn approving_all_revoking_all() {
     assert_eq!(
         res,
         OperatorsResponse {
-            operators: vec![crate::spec::Approval {
+            operators: vec![cw721::Approval {
                 spender: String::from("buddy"),
                 expires: buddy_expires,
             }]
@@ -842,7 +687,7 @@ fn query_tokens_by_owner() {
     let token_id3 = "sing".to_string();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id1.clone()),
+        token_id: token_id1.clone(),
         owner: demeter.clone(),
         token_uri: None,
         extension: None,
@@ -852,7 +697,7 @@ fn query_tokens_by_owner() {
         .unwrap();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id2.clone()),
+        token_id: token_id2.clone(),
         owner: ceres.clone(),
         token_uri: None,
         extension: None,
@@ -862,7 +707,7 @@ fn query_tokens_by_owner() {
         .unwrap();
 
     let mint_msg = ExecuteMsg::Mint(MintMsg::<Extension> {
-        token_id: Some(token_id3.clone()),
+        token_id: token_id3.clone(),
         owner: demeter.clone(),
         token_uri: None,
         extension: None,

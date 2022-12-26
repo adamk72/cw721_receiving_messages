@@ -11,6 +11,7 @@ documentation = { workspace = true }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+doctest = false
 
 [features]
 backtraces = ["cosmwasm-std/backtraces"]
@@ -19,6 +20,7 @@ backtraces = ["cosmwasm-std/backtraces"]
 cosmwasm-schema = { workspace = true }
 cosmwasm-std = { workspace = true }
 cw-storage-plus = { workspace = true }
+cw721 = { workspace = true } 
 cw721-base = { workspace = true } 
 cw721-visa = { workspace = true }
 schemars = { workspace = true }
