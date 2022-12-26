@@ -40,8 +40,6 @@ pub fn instantiate(
         minter: msg.apes[0].to_string(), // First ape in list becomes minter
     };
 
-    // @todo: other apes become "approves?"
-
     Cw721VisaContract::default().instantiate(
         deps.branch(),
         env,
@@ -49,8 +47,7 @@ pub fn instantiate(
         cw721_base_instantiate_msg,
     )?;
 
-    set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)
-        .map_err(ContractError::Std)?;
+    set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
     CONFIG.save(deps.storage, &config)?;
 

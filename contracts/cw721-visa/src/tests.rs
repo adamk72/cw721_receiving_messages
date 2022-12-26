@@ -9,11 +9,56 @@ use cosmwasm_std::{
     testing::{mock_dependencies, mock_env, mock_info},
     Addr, Response,
 };
+use cw2::{query_contract_info, ContractVersion};
 use cw721::Cw721Query;
 use cw721_base::{MintMsg, MinterResponse};
+use cw_multi_test::{App, ContractWrapper, Executor};
+
+fn contract_code() -> Box<dyn cw_multi_test::Contract<cosmwasm_std::Empty>> {
+    let contract = ContractWrapper::new(
+        crate::contract::execute,
+        crate::contract::instantiate,
+        crate::contract::query,
+    );
+    // .with_reply(cw721_visa::contract::reply);
+
+    Box::new(contract)
+}
 
 const CREATOR: &str = "creator";
 
+#[test]
+fn check_contract_version() {
+    let mut app = App::default();
+    let sender = Addr::unchecked("owner");
+    let code_id = app.store_code(contract_code());
+
+    let contract_addr = app
+        .instantiate_contract(
+            code_id,
+            sender,
+            &InstantiateMsg {
+                name: "SpaceShips".to_string(),
+                symbol: "SPACE".to_string(),
+                apes: vec![Addr::unchecked(CREATOR), Addr::unchecked("venus")],
+                jump_ring: Addr::unchecked("venus"),
+            },
+            &[],
+            "echo".to_string(),
+            None,
+        )
+        .unwrap();
+
+    let version: ContractVersion = query_contract_info(&app, contract_addr).unwrap();
+
+    assert_eq!(
+        ContractVersion {
+            contract: "cw721-visa".to_string(),
+            version: "0.16.0".to_string(),
+        },
+        version
+    );
+}
 #[test]
 fn use_metadata_extension() {
     let mut deps = mock_dependencies();

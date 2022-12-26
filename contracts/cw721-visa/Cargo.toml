@@ -2,8 +2,7 @@
 name          = "cw721-visa"
 description   = "Example extending CW721 NFT to store metadata on chain"
 authors       = [
-  "Ethan Frey <ethanfrey@users.noreply.github.com>",
-  "Orkun Külçe <orkun@deuslabs.fi>",
+  "Adam Kecskes <adam.kecskes@philabs.xyz",
 ]
 version       = { workspace = true }
 edition       = { workspace = true }
@@ -32,6 +31,7 @@ cosmwasm-std    = { workspace = true }
 cw2             = { workspace = true }
 cw721           = { workspace = true }
 cw721-base      = { workspace = true, features = ["library"] }
+cw-multi-test   = { workspace = true }
 cw-storage-plus = { workspace = true }
 schemars        = { workspace = true }
 serde           = { workspace = true }
