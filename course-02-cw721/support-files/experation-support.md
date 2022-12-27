@@ -1,12 +1,15 @@
 ---
 main file: expiration.rs
-supporting files: n/a
+supporting files: exercise-02, exercise-07
 ---
 
 **This is a support file only**
 
 # Answer
 ```rust
+/**
+ * Full file is part of the cw-utils library
+ */
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Timestamp;
 
