@@ -41,7 +41,7 @@
 	},
 	"An aside": {
 		"prefix": ["aside"],
-		"body": ["> ## ${1:title}\n> $0"]
+		"body": ["> ### ${1:title}\n> $0"]
 	},
 	"Summary": {
 		"prefix": ["summary"],
