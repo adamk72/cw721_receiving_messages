@@ -1,6 +1,5 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Addr;
-use cw721::Cw721ReceiveMsg;
 use serde::{Deserialize, Serialize};
 use universe::species::{SapienceScale, Sapient, Traveler};
 
@@ -37,7 +36,7 @@ pub enum ExecuteMsg {
     SetSapientNames { to: Vec<Sapient> },
     SetMinimumSapience { to: SapienceScale },
     JumpRingTravel { to: Addr },
-    ReceiveNft { msg: Cw721ReceiveMsg },
+    ReceiveNft(cw721::Cw721ReceiveMsg),
     AssignVisa { msg: AssignVisaMsg },
 }
 

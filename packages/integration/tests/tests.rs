@@ -124,7 +124,7 @@ pub fn visa_is_approved() {
     // Third, the above is an unapproved contract, so the user cannot initiate a JumpRingTravel call.
     // Check to see that this attempt does not work.
     app.execute_contract(
-        Addr::unchecked(VISA_HOLDER_ACCT),
+        Addr::unchecked(APE_ADMIN),
         jump_ring_contract.addr(),
         &PortalExecuteMsg::JumpRingTravel {
             to: Addr::unchecked(DESTINATION),
@@ -140,7 +140,7 @@ pub fn visa_is_approved() {
         msg: to_binary(BINARY_RCV_MSG).unwrap(),
     };
 
-    let msg = PortalExecuteMsg::ReceiveVisa { msg: payload };
+    let msg = PortalExecuteMsg::ReceiveNft(payload);
     let res = app
         .execute_contract(visa_contract.addr(), jump_ring_contract.addr(), &msg, &[])
         .unwrap();

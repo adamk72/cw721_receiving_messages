@@ -7,12 +7,13 @@ use crate::{
 use cosmwasm_std::{
     from_binary, to_binary, Addr, DepsMut, Env, MessageInfo, QueryRequest, Response, WasmQuery,
 };
-use cw721::{Cw721QueryMsg, Cw721ReceiveMsg, NftInfoResponse};
+use cw721::{Cw721QueryMsg, NftInfoResponse};
 use cw721_visa::metadata::VisaMetadata;
 use universe::species::{SapienceResponse, SapienceScale, Sapient};
 
 pub fn receive_visa(
-    msg: Cw721ReceiveMsg,
+    sender: String,
+    token_id: String,
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
@@ -20,7 +21,7 @@ pub fn receive_visa(
     let query = WasmQuery::Smart {
         contract_addr: info.sender.to_string(),
         msg: to_binary(&Cw721QueryMsg::NftInfo {
-            token_id: msg.token_id.clone(),
+            token_id: token_id.clone(),
         })?,
     };
 
@@ -32,7 +33,7 @@ pub fn receive_visa(
         return Err(ContractError::NotSmartEnough {});
     }
 
-    VISAS.update(deps.storage, &Addr::unchecked(msg.sender), |op| match op {
+    VISAS.update(deps.storage, &Addr::unchecked(sender), |op| match op {
         None => Err(ContractError::NotOnList {}),
         Some(mut visa) => {
             visa.approved = true;
@@ -43,7 +44,7 @@ pub fn receive_visa(
     Ok(Response::new()
         .add_attribute("action", "receive_visa")
         .add_attribute("new_owner", env.contract.address)
-        .add_attribute("new_token_id", msg.token_id))
+        .add_attribute("new_token_id", token_id))
 }
 
 pub fn initiate_jump_ring_travel(
