@@ -18,7 +18,7 @@
 
 	"CosmWasm exercise": {
 		"prefix": ["cosm", "exercise"],
-		"body" :["---\nmain file: ${1:one file name}\nsupporting files: ${2:comma separated list}\ncosmwasm topics:\nrust topics:\n---\n\n# Overview\n$0\n\n# Exercise\n\n# Starter\n```rust\n\n```\n\n# Answer\n```rust\n\n```"],
+		"body" :["---\nmain file: ${1:one file name}\nsupporting files: ${2:comma separated list}\ncosmwasm topics:\nrust topics:\n---\n\n# Overview\n>$0 \n\n# Exercise\n\n# Starter\n```rust\n\n```\n\n# Answer\n```rust\n\n```"],
 		"description": "Framework for CosmWasm exercise"
 	},
 	"Support Files": {
@@ -28,7 +28,7 @@
 	},
 	"Help Files": {
 		"prefix": ["help"],
-		"body" :["---\napplies to: $0\n---\n\n**This is a help file only**\n\n# Answer\n$0"],
+		"body" :["---\napplies to: $0\n---\n\n**This is a help file only**\n\n# Answer\n$1"],
 		"description": "Help only files"
 	},
 	"Rust markdown code block": {

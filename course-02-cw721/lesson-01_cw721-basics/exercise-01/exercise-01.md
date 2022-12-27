@@ -15,7 +15,7 @@ NFTs &mdash; non-fungible tokens &mdash; for CosmWasm are defined by the CW721 s
 What we'll be creating over this course is a contract that generates NFTs. It's important to note that the contract is, by itself, *not* an NFT. Rather, it is the generator of NFTs. Through a function that is typically called `Mint`, the contract creates tokens that represent the NFTs. Thus, an NFT contract is actually a list of NFTs, each of which could be said to have an an owner (the person who paid for the NFT, typically).
 
 ## CW721 Specification Details
-The CW721 spec is broken into four sections, each of which we'll be exploring over this lesson and the broader course.
+The CW721 spec is broken into four sections, each of which we'll be exploring over this lesson and the broader work in <Course>.
 
 - Messages, which are the executable functions for the contract and include `TransferNft`, `SendNft`, `Approve`, and `Revoke`.
 - Queries, which are for making inquires to the contract and include `OwnerOf`, `Approval`, `AllOperators` and `NumTokens`.
@@ -27,6 +27,8 @@ The CW721 spec is broken into four sections, each of which we'll be exploring ov
 
 Interestingly enough, you may have noticed that `Mint` is not part of the CW721 spec. This because the act of NFT creation is very specific to the type of NFT and how the contract owner might choose to share and distribute NFTs. There is no standard for NFT generation in that sense.
 
+# Our Contract
+In <Course>, we'll be writing a contract of our own called `cw721-visa`. It will leverage an existing contract from the CosmWasm org called `cw721-base`. We will not necessarily be implementing *all* of the functionality of a CW721 spec contract, leaving much a reading exercise to you, but we will hit the important highlights and enough to give you a strong foundation for your own future work on creating CW721-based NFT contracts.
 
 # Exercise
 Quiz time! Simply place an `x` in the checkbox that is your answer.
