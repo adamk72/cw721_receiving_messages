@@ -1,5 +1,5 @@
 ---
-main file: one file name
+main file: contract.rs 
 supporting files: comma separated list
 cosmwasm topics: Deps, Api, addr_validate
 rust topics:

@@ -1,6 +1,6 @@
 ---
 main file: state.rs 
-supporting files: ./approval-support.md, support-files/expiration.md,  
+supporting files: cw721/query.rs, cw-utils/expiration.md,  
 cosmwasm topics:
 rust topics:
 ---

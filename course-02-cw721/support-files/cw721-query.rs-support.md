@@ -12,9 +12,20 @@ supporting files: n/a
  */
 
 use cosmwasm_schema::cw_serde;
+
+#[cw_serde]
+pub struct Approval {
+    /// Account that can transfer/send the token
+    pub spender: String,
+    /// When the Approval expires (maybe Expiration::never)
+    pub expires: Expiration,
+}
+
 #[cw_serde]
 pub struct ContractInfoResponse {
     pub name: String,
     pub symbol: String,
 }
+
+
 ```
