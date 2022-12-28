@@ -47,6 +47,24 @@ pub fn receive_visa(
         .add_attribute("new_token_id", token_id))
 }
 
+/// Receive initial details and add to visa whitelist for later verification.
+pub fn assign_visa(
+    msg: AssignVisaMsg,
+    deps: DepsMut,
+    _info: MessageInfo,
+) -> Result<Response, ContractError> {
+    // The visa will be approved once the the nft is sent over.
+
+    let visa = Visa {
+        approved: false,
+        details: msg.details.clone(),
+    };
+
+    VISAS.save(deps.storage, &msg.details.holder, &visa)?;
+
+    Ok(Response::new().add_attribute("action", "assign_visa"))
+}
+
 pub fn initiate_jump_ring_travel(
     _to: Addr,
     deps: DepsMut,
@@ -116,22 +134,4 @@ pub fn set_sapient_names(
     config.planet_sapients = to;
     CONFIG.save(deps.storage, &config)?;
     Ok(Response::new().add_attribute("action", "set_sapient_names"))
-}
-
-/// Receive initial details and add to visa whitelist for later verification.
-pub fn assign_visa(
-    msg: AssignVisaMsg,
-    deps: DepsMut,
-    _info: MessageInfo,
-) -> Result<Response, ContractError> {
-    // The visa will be approved once the the nft is sent over.
-
-    let visa = Visa {
-        approved: false,
-        details: msg.details.clone(),
-    };
-
-    VISAS.save(deps.storage, &msg.details.holder, &visa)?;
-
-    Ok(Response::new().add_attribute("action", "assign_visa"))
 }
