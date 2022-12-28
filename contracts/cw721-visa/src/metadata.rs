@@ -1,5 +1,4 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::Addr;
 use universe::species::Species;
 
 #[cw_serde]
@@ -13,11 +12,11 @@ pub struct Trait {
 #[cw_serde]
 #[derive(Default)]
 pub struct VisaMetadata {
-    pub account: Option<Addr>,
-    pub attributes: Option<Vec<Trait>>,
-    pub dna: Option<String>,
-    pub image: Option<String>,
-    pub name: Option<String>,
-    pub origin: Option<Addr>,
-    pub species: Option<Species>,
+    pub account: String,
+    pub attributes: Vec<Trait>,
+    pub dna: String,
+    pub image: String,
+    pub name: String,
+    pub origin: String,
+    pub species: Species,
 }

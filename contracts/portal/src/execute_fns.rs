@@ -26,7 +26,7 @@ pub fn receive_visa(
     };
 
     let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
-    let incoming_sapience = res.clone().extension.species.unwrap().sapience_level;
+    let incoming_sapience = res.clone().extension.species.sapience_level;
     let contract_min_sapience: SapienceResponse =
         from_binary(&minimum_sapience(deps.as_ref()).unwrap()).unwrap();
     if incoming_sapience.as_value() < contract_min_sapience.level.as_value() {

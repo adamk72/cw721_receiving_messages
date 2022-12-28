@@ -83,9 +83,9 @@ pub fn visa_is_approved() {
         owner: String::from(APE_CONTRACT_OWNER),
         token_uri: Some(token_uri),
         extension: Some(VisaMetadata {
-            account: Some(Addr::unchecked(VISA_HOLDER_ACCT)),
-            name: Some(VISA_HOLDER_NAME.to_string()),
-            species: Some(get_species_by_level(OTHER_ALIEN, SapienceScale::High)),
+            account: VISA_HOLDER_ACCT.to_string(),
+            name: VISA_HOLDER_NAME.to_string(),
+            species: get_species_by_level(OTHER_ALIEN, SapienceScale::High),
             ..VisaMetadata::default()
         }),
     });

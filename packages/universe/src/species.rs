@@ -8,6 +8,15 @@ pub struct Species {
     pub sapience_level: SapienceScale,
 }
 
+impl Default for Species {
+    fn default() -> Self {
+        Species {
+            name: "Unnamed".to_string(),
+            sapience_level: SapienceScale::None,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub enum SapienceScale {
     None = 0,   // bugs
@@ -50,6 +59,6 @@ pub struct SapienceResponse {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct Sapient {
-    // name: String,
-    // telepathic: bool,
+    // pub name: String,
+    // pub telepathic: bool,
 }

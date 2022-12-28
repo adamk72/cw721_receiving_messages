@@ -81,7 +81,7 @@ fn use_metadata_extension() {
         owner: "john".to_string(),
         token_uri: Some("https://starships.example.com/Starship/Enterprise.json".into()),
         extension: Some(VisaMetadata {
-            name: Some("Starship USS Enterprise".to_string()),
+            name: "Starship USS Enterprise".to_string(),
             ..VisaMetadata::default()
         }),
     };
