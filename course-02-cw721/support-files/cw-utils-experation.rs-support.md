@@ -8,8 +8,9 @@ supporting files: exercise-02, exercise-07
 # Answer
 ```rust
 /**
- * Full file is part of the cw-utils library
+ * Full file can be found with the cw-utils library at https://github.com/CosmWasm/cw-utils/blob/main/src/expiration.rs.
  */
+
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Timestamp;
 

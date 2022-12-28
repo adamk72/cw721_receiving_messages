@@ -1,6 +1,6 @@
 ---
 main file: exercise-04
-supporting files: 
+supporting files: cw721/query.rs
 cosmwasm topics:
 rust topics:
 ---

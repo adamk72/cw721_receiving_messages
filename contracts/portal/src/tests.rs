@@ -12,6 +12,7 @@ use cosmwasm_std::{
     testing::{mock_dependencies, mock_env},
 };
 use cosmwasm_std::{testing::mock_info, Addr, Response};
+use cw_storage_plus::Item;
 use universe::species::{SapienceResponse, SapienceScale, Sapient};
 
 #[test]
@@ -46,6 +47,15 @@ pub fn visa_not_on_list() {
     assert_eq!(err, ContractError::NotOnList {})
 }
 
+#[allow(dead_code)]
+pub fn item_test() {
+    let mut deps = mock_dependencies();
+
+    let game_name: Item<String> = Item::new("cfg_info");
+    game_name
+        .save(deps.as_mut().storage, &"Race for the Galaxy".to_string())
+        .unwrap();
+}
 #[test]
 pub fn visa_is_approved() {
     let mut deps = mock_dependencies();
