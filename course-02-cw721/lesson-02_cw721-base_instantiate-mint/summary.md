@@ -19,6 +19,7 @@ From the `cosmwasm` libraries, we touched on:
 
 
 ## Next Up
+Let's write the initial part of a new NFT contract called `cw721-visa`. 
 
 <!-- This should be the contract file -->
 # Answer
