@@ -6,7 +6,7 @@ rust topics:
 ---
 
 # Overview
-> The trouble with travel between Exodite eco-worlds is that you need a new visa for each Jump Ring. Guess I'll get in queue... *again*. I hear the Mel'Mirrys Asteroid of Sargas 4 is breathtaking to see.
+> 
 
 # CosmWasm Packages 
 We're going to a break from coding for a moment and talk about some of the Rust packages that we commonly see use for CosmWasm development. 

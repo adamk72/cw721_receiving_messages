@@ -8,7 +8,6 @@ pub struct Trait {
     pub value: String,
 }
 
-// see: https://docs.opensea.io/docs/metadata-standards
 #[cw_serde]
 #[derive(Default)]
 pub struct VisaMetadata {
