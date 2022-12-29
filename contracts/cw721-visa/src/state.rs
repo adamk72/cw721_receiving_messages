@@ -1,6 +1,5 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Addr;
-// use cw721_base::Extension;
 use cw_storage_plus::Item;
 
 #[cw_serde]
