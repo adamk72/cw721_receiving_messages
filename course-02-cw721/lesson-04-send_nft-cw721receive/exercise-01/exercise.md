@@ -1,7 +1,7 @@
 ---
 main file: execute_fns 
 supporting files: ./help-1.rs 
-cosmwasm topics:
+cosmwasm topics: Response
 rust topics:
 ---
 
@@ -20,14 +20,14 @@ For this exercise, we're going to have you write a portion of the `ExecuteMsg::S
 You'll see in the exercise boilerplate what there's an initial step, `_transfer_nft`. This is a helper function called by a couple of `cw721-base` functions including the main one called from the `ExecuteMsg::TransferNft` variant arm). It has a lot of steps to it, so we'll forego the details for this lesson, but what it does is validates that the sender is either the owner or on the approval list and saves the `token_id` to the `tokens` list (see Help for more).
 
 # Response
-We've seen `Response` plenty of times before, here and in the Intro to CosmWasm course. It's been awhile since we've discussed it though. As reminder, `Response`, is part of the `cosmwasm_std` library and is a wrapper around CosmWasm's [Event](https://docs.cosmwasm.com/docs/1.0/smart-contracts/events/) system that handles the messaging. This is how the contracts communicate with one another. 
+We've seen `Response` plenty of times before, here and in the *Intro to CosmWasm* course. It's been awhile since we've discussed it though. As reminder, `Response`, is part of the `cosmwasm_std` library and is a wrapper around CosmWasm's [Event](https://docs.cosmwasm.com/docs/1.0/smart-contracts/events/) system that handles the messaging. This is how the contracts communicate with one another. 
 
 Most commonly seen is the `.add_attribute()` implementation, which sends basic information to the blockchain for later reference/data collection. For our case here, we'll be interested in `.add_message()` for communication across contracts. See the Help for a reminder about the Actor model design pattern used by CosmWasm.
 
-
 # Exercise
+This is a preparatory exercise, setting up for future work.
 
-1. Add the use import for `Cw721ReceiveMsg` from the `cw721` spec package.
+1. Add the use import for `Cw721ReceiveMsg` from the `cw721` spec package. We'll use it in the next exercise.
 2. Add `.add_message()` to the `Response` object. For now, leave the parameter list blank. 
 
 # Starter
