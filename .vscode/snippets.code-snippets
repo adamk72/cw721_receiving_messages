@@ -39,6 +39,10 @@
 		"prefix": ["lesson"],
 		"body": ["## Lesson #$0"]
 	},
+	"Description": {
+		"prefix": "desc",
+		"body": "# Title\n$1\n\n# Description\n$0\n"
+	},
 	"An aside": {
 		"prefix": ["aside"],
 		"body": ["> ### ${1:title}\n> $0"]
