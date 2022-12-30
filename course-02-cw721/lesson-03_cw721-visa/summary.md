@@ -18,7 +18,7 @@ From the `cosmwasm` libraries, we touched on:
 - A little about the often seen `cw_serde` procedural macro.
 
 ## Next Up
-We're going to take a trip to past and make some changes to the Jump Ring contract so we can learn about transferring NFTs between contracts!
+In preparation for updates to the Jump Ring portal contract, we're going to take a short side trip to look at the inner workings of `Cw721ReceiveMsg`. 
 
 <!-- This should be the contract file -->
 # Answer

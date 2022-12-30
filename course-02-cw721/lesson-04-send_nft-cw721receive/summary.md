@@ -17,8 +17,7 @@ From the `cosmwasm` libraries, we touched on:
 
 
 ## Next Up
-We'll get back to working on the `cw721-visa` contract. Now we have the tools and knowledge to complete the task.
-
+We're going to take a trip to past and make some changes to the Jump Ring contract so we can learn about transferring NFTs between contracts!
 <!-- This should be the contract file -->
 # Answer
 ```rust
