@@ -1,5 +1,5 @@
 ---
-main file: one file name
+main file: cw-storage-plus/map.rs 
 supporting files: n/a
 ---
 
