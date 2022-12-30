@@ -6,7 +6,7 @@ rust topics:
 ---
 
 # Overview
-> The revered Exodite scientist Dr. Palicki was the first sapient in the InterChains to notice that the Jump Rings weren't always programmed identically. Her standards proposal stabilized Jump Ring travel.
+> The revered Exodite scientist Dr. Palicki was the first sapient in the Interchain to notice that the Jump Rings weren't always programmed identically. Her standards proposal stabilized Jump Ring travel.
 
 # CW2
 Yes, *another* standard to be aware of! The CosmWasm community has standard to define contract info for the purposes of managing contract-to-contact migrations, which is discussed in detail [here](https://docs.cosmwasm.com/cw-plus/0.9.0/cw2/spec/)<ExternalLink>.

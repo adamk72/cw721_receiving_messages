@@ -34,7 +34,7 @@ impl SapienceScale {
             SapienceScale::High => "High",
         }
     }
-    pub fn as_value(&self) -> u8 {
+    pub fn as_num(&self) -> u8 {
         match self {
             SapienceScale::None => 0,
             SapienceScale::Low => 1,

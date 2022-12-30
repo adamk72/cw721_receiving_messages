@@ -11,19 +11,6 @@ rust topics:
 # Sending NFTs Between Contracts
 The CW721 spec suggests two functions to support the sending of an NFT from one contract (such as the one doing the minting) with `SendNft()` and another contact which supports `ReceiveNft()`. The destination contract doesn't have to have any of the other features of a standard NFT contract, such as approving or revoking spend permissions. It only has to be able to store limited NFT data.
 
-## SendNft()
-The `cw721-base` contract has this functionality already built in; you don't need to do anything special other than call it through CosmWasm's messaging system.
-
-## ReceiveNft()
-This function is implemented by the destination contract and expects a `Cw721ReceiveMsg` formatted message (see the `receiver.rs` tab for complete details):
-```rust
-pub struct Cw721ReceiveMsg {
-    pub sender: String,   // the current owner of the NFT token
-    pub token_id: String, // the id of the token
-    pub msg: Binary,      // additional info; we won't be using this.
-}
-```
-
 You'll notice that there aren't a lot of details here. Where's the metadata, for example? The information from here will need to be stored by the contract for later reference by calling back to the originating contract, which can act a the source of truth.
 
 # The Plan

@@ -27,6 +27,7 @@ impl Default for Species {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+#[repr(u8)]
 pub enum SapienceScale {
     None = 0,   // bugs
     Low = 1,    // cats, dogs
@@ -43,7 +44,7 @@ impl SapienceScale {
             SapienceScale::High => "High",
         }
     }
-    pub fn as_value(&self) -> u8 {
+    pub fn as_num(&self) -> u8 {
         match self {
             SapienceScale::None => 0,
             SapienceScale::Low => 1,

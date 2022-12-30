@@ -18,22 +18,25 @@ pub fn receive_visa(
     env: Env,
     info: MessageInfo,
 ) -> Result<Response, ContractError> {
+    let msg = Cw721QueryMsg::NftInfo {
+        token_id: token_id.clone(),
+    };
+
     let query = WasmQuery::Smart {
         contract_addr: info.sender.to_string(),
-        msg: to_binary(&Cw721QueryMsg::NftInfo {
-            token_id: token_id.clone(),
-        })?,
+        msg: to_binary(&msg)?,
     };
 
     let res: NftInfoResponse<VisaMetadata> = deps.querier.query(&QueryRequest::Wasm(query))?;
-    let incoming_sapience = res.clone().extension.species.sapience_level;
+
+    let incoming_sapience_level = res.clone().extension.species.sapience_level;
     let contract_min_sapience: SapienceResponse =
         from_binary(&minimum_sapience(deps.as_ref()).unwrap()).unwrap();
-    if incoming_sapience.as_value() < contract_min_sapience.level.as_value() {
+    if incoming_sapience_level.as_num() < contract_min_sapience.level.as_num() {
         return Err(ContractError::NotSmartEnough {});
     }
 
-    VISAS.update(deps.storage, &Addr::unchecked(sender), |op| match op {
+    VISAS.update(deps.storage, &Addr::unchecked(sender), |old| match old {
         None => Err(ContractError::NotOnList {}),
         Some(mut visa) => {
             visa.approved = true;
