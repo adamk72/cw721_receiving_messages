@@ -24,6 +24,36 @@ use portal::msg::{
 };
 use universe::species::{SapienceScale, Sapient};
 
+mod internal_tests {
+    #![allow(dead_code)]
+    struct Book {
+        author: String,
+        title: String,
+        info: String,
+    }
+    enum Message {
+        Quit,
+        Move { x: i32, y: i32 },
+        Write(String),
+        WriteBook(Book),
+        ChangeColor(i32, i32, i32),
+    }
+    fn match_msg(msg: Message) {
+        match msg {
+            Message::Quit => quit(),
+            Message::Move { x, y } => move_point(x, y),
+            Message::Write(text) => write(text),
+            Message::ChangeColor(r, g, b) => update_color(r, g, b),
+            Message::WriteBook(Book { author, title, .. }) => write_book(author, title),
+        }
+    }
+
+    fn quit() {}
+    fn write(_text: String) {}
+    fn write_book(_author: String, _title: String) {}
+    fn move_point(_x: i32, _y: i32) {}
+    fn update_color(_r: i32, _g: i32, _b: i32) {}
+}
 #[test]
 pub fn visa_is_approved() {
     /***** Setup environment *****/

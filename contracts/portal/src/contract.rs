@@ -30,10 +30,10 @@ pub fn execute(
         ExecuteMsg::SetSapientNames { to } => set_sapient_names(to, deps, info),
         ExecuteMsg::SetMinimumSapience { to } => set_minimum_sapience(to, deps, info),
         ExecuteMsg::JumpRingTravel { to } => initiate_jump_ring_travel(to, deps, info),
+        ExecuteMsg::AssignVisa { msg } => assign_visa(msg, deps, info),
         ExecuteMsg::ReceiveNft(cw721::Cw721ReceiveMsg {
             sender, token_id, ..
         }) => receive_visa(sender, token_id, deps, env, info),
-        ExecuteMsg::AssignVisa { msg } => assign_visa(msg, deps, info),
     }
 }
 

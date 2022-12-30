@@ -1,3 +1,12 @@
+---
+main file: one file name
+supporting files: n/a
+---
+
+**This is a support file only**
+
+# Answer
+```rust
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Addr;
 use serde::{Deserialize, Serialize};
@@ -51,3 +60,4 @@ pub struct InstantiateMsg {
 pub struct JumpRingCheckResponse {
     pub valid: bool,
 }
+```
