@@ -2,34 +2,34 @@
 
 ## Preamble
 
-For CosmWasm, we delve into the CW721 standard; we create a CW721 contract from scratch (following the model of the `cw721-base` contract). This allows us to explore a breadth of functionality, some new, some previously seen but explored more deeply. It also touches on the use of `cw-storage-plus` which we did not use in the first course.
+For CosmWasm, we delve into the CW721 standard; following the model of the `cw721-base` contract from CosmWasm, we'll replicate parts of that contract. This allows us to explore a breadth of functionality, some new, some previously seen and explored more deeply. It also touches on the use of `cw-storage-plus` which we did not use in the first course and replaces the deprecated `cosmwasm-storage` package.
 
-This course should highlight the logic of how NFTs work; there is one contract, but multiple uniquely identified tokens so there needs to be many checks (especially around approval, admin, and transfer/send) to ensure integrity.
+This course highlights the logic of how NFTs work; there is one contract, but multiple uniquely identified tokens so there needs to be many checks (especially around approval, admin, and transfer/send) to ensure integrity. Metadata is an optional feature which we will also cover.
 
-For Rust, the `cw721-base` applies a few advanced patterns, including using `Cw721Contract` as an `impl` in order to allow for extensibility as well as extensive use of lifetimes. 
+For Rust, the `cw721-base` applies a few advanced design patterns, including using `Cw721Contract` as an `impl` in order to allow for extensibility as well as extensive use of lifetimes. 
 
 ## Synopsis
 
 ### Story 
 
-Not all planets are freely open for Jump Ring travel. The Exodites inhabit a cluster of planets that they are protective of. Their lush and beautiful worlds are limited to only a select few who pass the rigorous interview process. If one passes, then they will receive a vis to travel and stay within the Exodite cluster. The Exodites are a simian race, with dimorphic sexes, the females having long, semi-prehensile tails and the males have short, nubby tails.
+Not all planets are freely open for Jump Ring travel. The Exodites inhabit a cluster of planets that they are protective of. Their lush and beautiful worlds are limited to only a select few who pass the rigorous interview process. If one passes, then they will receive a visa to travel and stay within the Exodite cluster. The Exodites are a simian race, with dimorphic sexes, the females having long, semi-prehensile tails and the males have short, nubby tails. Incredibly intelligent, they long ago cracked the code of how to re-program the Jump Rings, the sign of a truly high sapience level.
 
 Visas are unique to the applicant; they can be approved and revoked by an Administrator of Planetary Experience (an "Ape"). A visa is good for only the Jump Ring it is assigned to. To move between planets, one has to register with the local Ape and the proper Jump Ring transfer their visa there. If they do not transfer in a given period of time, they will be atomized.
 
-The visa tracks sapience levels; some of the Exodite planets do not allow for intelligent beings to visit the planets at all, as they are considered ecological sanctuaries, accessible by Jump Rings that do not support visa transfers (you have to be an Exodite to visit, and only then if approved by the Council of High Imperial Managers and Peerages of State (the "CHIMPS").
+The visa tracks sapience levels; some of the Exodite planets do not allow for certain sapience levels to visit the planets at all, as they are considered ecological sanctuaries and only responsible sapients are allowed to view their levels. Such worlds are do not support visa transfers for non-Exodites, and travel even by Exodites must be approved by the Council of High Imperial Managers and Peerages of State (the "CHIMPS").
 
 When an Ape sends the visa over to a new Jump Ring addy, it may be rejected if the species is on the forbidden list (as they don't want any ecological contamination to happen).
 
 ### Code
 
 This will require two contracts:
-1. **A new CW721 Visa Contract with an "EXO" token**
+1. **A new CW721 Visa Contract**
 > The on-chain metadata will contain the details of the port of entry (first planet that accepted the traveler), along with other appropriate data including of course a photo of the traveler and their DNA sample. Each Jump Ring must have its own Visa handler, so the Visa contract and the Jump Ring contract IDs must match up.
 > These tokens are non-transferable except by an APE (see cw721-non-transferable). 
 > Visa token lives with the NFT contract initially; it is not valid for travel to any Exodite world, as a Jump Ring requires the NFT to be controlled (i.e., the Jump Ring has to be the) which happens as a function of `SendNft` where the destination contract becomes the owner of the token. This happens after `AssignVisa`.
 
 2. **Modifications to the Jump Ring Contract**
-> This will have a "Receive" function that can accept the EXO token. When the Jump Ring is activated, it will confirm the sender addy matches that of the list of allowed visas before allowing the traveler to pass. The contract should check that the origin matches that of the planet being transferred from [ed: might have some trouble with this since we put a maximum sapience check in place somewhere too]. 
+> This will have a "Receive" function that can accept the incoming visa token. When the Jump Ring is activated, it will confirm the sender addy matches that of the list of allowed visas before allowing the traveler to pass. The contract should check that the origin matches that of the planet being transferred from [ed: might have some trouble with this since we put a maximum sapience check in place somewhere too]. 
 
 3. **Workflow** *(* ✅ *represents is tested in code)*
   - User desires to travel to Exodite planet; User must get Visa.
@@ -90,38 +90,22 @@ This will require two contracts:
 ## Outline
 *This is a suggestion; subject to change as a result of the actual effort.*
 
-### Lesson 1 - Standard Features #1
-- `mint` - `IndexedMap` from `cw-storage-plus` crate; `MintMsg`; increment token count; `TokenInfo`
-- `transfer_nft` - `add_attribute`
-- `send_nft` - `WasmMsg::Execute`; `Cw721ReceiveMsg`
+### Lesson 1 - The Essentials of the CW721 Spec
+- [Description](/course-02-cw721/lesson-01_cw721-base_contract-structure/description.md)
+- [Summary](/course-02-cw721/lesson-01_cw721-base_contract-structure/summary.md)
 
-### Lesson 2 - Standard Features #2
-- `approve` - `Expiration`, `retain` (Rust); *Consider for a market of NFTs storyline*
-- `approve_all`
-- `revoke` - similar to approve, but with different response.
-- `revoke_all`
-- `burn` - remove from token list; decrement token count
+### Lesson 2 - Instantiate and Mint for the Cw721-Base Contract
+- [Description](/course-02-cw721/lesson-02_cw721-base_instantiate-mint/description.md)
+- [Summary](/course-02-cw721/lesson-02_cw721-base_instantiate-mint/summary.md)
 
-### Lesson 3 - Query Messages #1
-- `owner_of` - return owner address
-- `approval` - Allow action on one NFT; `cw721::Approval` with `Expiration` again; `ApprovalsResponse`; advanced `Vec` functionality (Rust)
-- `approvals` 
-- `all_operators` - Allow action on all NFTs
-- `num_tokens`
-- `contract_info` - name, symbol
+### Lesson 3 - Create the Visa Contract
+- [Description](/course-02-cw721/lesson-03_cw721-visa/description.md)
+- [Summary](/course-02-cw721/lesson-03_cw721-visa/summary.md)
 
-### Lesson 4 - Query Messages #2
-- `nft_info` - Get metadata info and uri
-- `all_nft_info` - includes approvals
-- `tokens` - Get by owner; `Bound` from `cw-storage-plus`; `TokensResponse`
-- `all_tokens` - Get by contract
-- `minter` - Minter's address
+### Lesson 4 - Creating Cw721ReceiveMsg
+- [Description](/course-02-cw721/lesson-04-send_nft-cw721receive/description.md)
+- [Summary](/course-02-cw721/lesson-04-send_nft-cw721receive/summary.md)
 
-### Lesson 5 - Metadata Onchain
-- `extension: T` - *Extra contract: `crates.io:cw721-metadata-onchain`; consider if we want to explore the details of the metadata* 
-
-### Lesson 6 - Special Execute Messages
-This would include extra functionality that apply specifically to the Portal/Potion contracts (depending on storyline)
-
-
-
+### Lesson 4 - Add `ReceiveNft` to Portal Contract
+- [Description](/course-02-cw721/lesson-05-portal-receive-nft/description.md)
+- [Summary](/course-02-cw721/lesson-05-portal-receive-nft/summary.md)
